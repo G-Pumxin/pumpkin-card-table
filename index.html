@@ -788,6 +788,7 @@
     border-radius: 10px;
     font-size: 14px;
     transition: border-color .2s, background .2s;
+    cursor: pointer;
   }
   .about-link:hover {
     border-color: var(--border-hover);
@@ -816,9 +817,139 @@
     font-size: 12.5px;
     line-height: 1.9;
   }
-  .page-footer a { color: var(--text-dim); transition: color .2s; }
+  .page-footer a { color: var(--text-dim); transition: color .2s; cursor: pointer; }
   .page-footer a:hover { color: var(--gold); }
   .page-footer .foot-sep { margin: 0 10px; opacity: .5; }
+
+  /* ============ QQ 群浮层 ============ */
+  .modal-overlay {
+    display: none;
+    position: fixed;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.7);
+    backdrop-filter: blur(6px);
+    -webkit-backdrop-filter: blur(6px);
+    z-index: 200;
+    align-items: center;
+    justify-content: center;
+    padding: 20px;
+  }
+  .modal-overlay.show { display: flex; }
+  .modal {
+    background: #141414;
+    border: 1px solid rgba(212, 160, 41, 0.25);
+    border-radius: 20px;
+    padding: 36px 32px 28px;
+    max-width: 380px;
+    width: 100%;
+    text-align: center;
+    position: relative;
+    animation: modalIn .25s ease;
+    box-shadow: 0 24px 60px rgba(0,0,0,.7);
+  }
+  @keyframes modalIn {
+    from { opacity: 0; transform: translateY(16px) scale(.97); }
+    to   { opacity: 1; transform: none; }
+  }
+  .modal-close {
+    position: absolute;
+    top: 14px; right: 16px;
+    width: 32px; height: 32px;
+    background: transparent;
+    border: none;
+    color: var(--text-dim);
+    font-size: 22px;
+    cursor: pointer;
+    border-radius: 8px;
+    transition: color .2s, background .2s;
+    line-height: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  .modal-close:hover {
+    color: var(--text);
+    background: rgba(255,255,255,.06);
+  }
+  .modal-title {
+    font-size: 17px;
+    font-weight: 700;
+    color: var(--text);
+    margin-bottom: 6px;
+  }
+  .modal-sub {
+    font-size: 13px;
+    color: var(--text-dim);
+    margin-bottom: 22px;
+  }
+  .modal-qr {
+    width: 180px;
+    height: 180px;
+    margin: 0 auto 18px;
+    border-radius: 12px;
+    overflow: hidden;
+    background: #1A1A1A;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  .modal-qr img { width: 100%; height: 100%; object-fit: contain; }
+  .modal-groupnum {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    font-family: ui-monospace, "SF Mono", Menlo, monospace;
+    font-size: 18px;
+    font-weight: 700;
+    color: var(--gold);
+    letter-spacing: 1px;
+    margin-bottom: 20px;
+  }
+  .copy-btn {
+    font-size: 11px;
+    font-family: inherit;
+    font-weight: 500;
+    color: var(--text-dim);
+    background: rgba(212,160,41,.08);
+    border: 1px solid rgba(212,160,41,.2);
+    border-radius: 6px;
+    padding: 4px 10px;
+    cursor: pointer;
+    transition: color .2s, border-color .2s;
+  }
+  .copy-btn:hover {
+    color: var(--gold);
+    border-color: rgba(212,160,41,.5);
+  }
+  .modal-join {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    width: 100%;
+    padding: 13px 24px;
+    border-radius: 999px;
+    font-size: 14.5px;
+    font-weight: 600;
+    background: var(--grad);
+    color: #fff;
+    border: none;
+    cursor: pointer;
+    font-family: inherit;
+    transition: transform .2s, box-shadow .2s;
+    box-shadow: 0 6px 22px rgba(255,107,0,.3);
+    text-decoration: none;
+  }
+  .modal-join:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 10px 30px rgba(255,107,0,.45);
+  }
+  .modal-join svg {
+    width: 17px; height: 17px;
+    stroke: currentColor; stroke-width: 2; fill: none;
+    stroke-linecap: round; stroke-linejoin: round;
+  }
 
   /* ============ 响应式 ============ */
   @media (max-width: 900px) {
@@ -851,134 +982,8 @@
     .log-date { min-width: auto; }
     .tut-block { padding: 22px 18px; }
     .about-link { flex-wrap: wrap; }
+    .modal { padding: 30px 22px 24px; }
   }
-  
-  /* QQ群浮层 */
-.modal-overlay {
-  display: none;
-  position: fixed;
-  inset: 0;
-  background: rgba(0, 0, 0, 0.7);
-  backdrop-filter: blur(6px);
-  -webkit-backdrop-filter: blur(6px);
-  z-index: 200;
-  align-items: center;
-  justify-content: center;
-  padding: 20px;
-}
-.modal-overlay.show {
-  display: flex;
-}
-.modal {
-  background: #141414;
-  border: 1px solid rgba(212, 160, 41, 0.25);
-  border-radius: 20px;
-  padding: 36px 32px 28px;
-  max-width: 380px;
-  width: 100%;
-  text-align: center;
-  position: relative;
-  animation: modalIn .25s ease;
-}
-@keyframes modalIn {
-  from { opacity: 0; transform: translateY(16px) scale(.97); }
-  to   { opacity: 1; transform: none; }
-}
-.modal-close {
-  position: absolute;
-  top: 14px; right: 16px;
-  width: 32px; height: 32px;
-  background: transparent;
-  border: none;
-  color: #8A8275;
-  font-size: 22px;
-  cursor: pointer;
-  border-radius: 8px;
-  transition: color .2s, background .2s;
-  line-height: 1;
-}
-.modal-close:hover {
-  color: #EDE8DC;
-  background: rgba(255,255,255,.06);
-}
-.modal-title {
-  font-size: 17px;
-  font-weight: 700;
-  color: #EDE8DC;
-  margin-bottom: 6px;
-}
-.modal-sub {
-  font-size: 13px;
-  color: #8A8275;
-  margin-bottom: 22px;
-}
-.modal-qr {
-  width: 180px;
-  height: 180px;
-  margin: 0 auto 18px;
-  border-radius: 12px;
-  overflow: hidden;
-  background: #1A1A1A;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-.modal-qr img {
-  width: 100%;
-  height: 100%;
-  object-fit: contain;
-}
-.modal-groupnum {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 10px;
-  font-family: ui-monospace, "SF Mono", Menlo, monospace;
-  font-size: 18px;
-  font-weight: 700;
-  color: #D4A029;
-  letter-spacing: 1px;
-  margin-bottom: 20px;
-}
-.modal-groupnum .copy-btn {
-  font-size: 11px;
-  font-family: inherit;
-  font-weight: 500;
-  color: #8A8275;
-  background: rgba(212,160,41,.08);
-  border: 1px solid rgba(212,160,41,.2);
-  border-radius: 6px;
-  padding: 4px 10px;
-  cursor: pointer;
-  transition: color .2s, border-color .2s;
-}
-.modal-groupnum .copy-btn:hover {
-  color: #D4A029;
-  border-color: rgba(212,160,41,.5);
-}
-.modal-join {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  gap: 8px;
-  width: 100%;
-  padding: 13px 24px;
-  border-radius: 999px;
-  font-size: 14.5px;
-  font-weight: 600;
-  background: linear-gradient(135deg, #D4A029, #FF6B00);
-  color: #fff;
-  border: none;
-  cursor: pointer;
-  font-family: inherit;
-  transition: transform .2s, box-shadow .2s;
-  box-shadow: 0 6px 22px rgba(255,107,0,.3);
-  text-decoration: none;
-}
-.modal-join:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 10px 30px rgba(255,107,0,.45);
-}
 </style>
 </head>
 <body>
@@ -1055,7 +1060,7 @@
             <svg viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
             下载最新版
           </a>
-          <a class="btn btn-ghost" href="https://qm.qq.com/q/247467529" target="_blank" rel="noopener">
+          <a class="btn btn-ghost js-open-qq" href="#" role="button">
             <svg viewBox="0 0 24 24"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/></svg>
             加入 QQ 群
           </a>
@@ -1280,7 +1285,7 @@
     <div class="page-footer">
       © 2025 - 2026 十二引工作室 · 南瓜牌桌
       <span class="foot-sep">·</span>
-      <a href="https://qm.qq.com/q/247467529" target="_blank" rel="noopener">官方 QQ 群 247467529</a>
+      <a class="js-open-qq">官方 QQ 群 247467529</a>
     </div>
   </section>
 
@@ -1317,7 +1322,7 @@
     <div class="page-footer">
       © 2025 - 2026 十二引工作室 · 南瓜牌桌
       <span class="foot-sep">·</span>
-      <a href="https://qm.qq.com/q/247467529" target="_blank" rel="noopener">官方 QQ 群 247467529</a>
+      <a class="js-open-qq">官方 QQ 群 247467529</a>
     </div>
   </section>
 
@@ -1411,7 +1416,7 @@
     <div class="page-footer">
       © 2025 - 2026 十二引工作室 · 南瓜牌桌
       <span class="foot-sep">·</span>
-      <a href="https://qm.qq.com/q/247467529" target="_blank" rel="noopener">官方 QQ 群 247467529</a>
+      <a class="js-open-qq">官方 QQ 群 247467529</a>
     </div>
   </section>
 
@@ -1447,11 +1452,11 @@
       <div class="about-block">
         <h3>联系方式</h3>
         <div class="about-links">
-          <a class="about-link" href="https://qm.qq.com/q/247467529" target="_blank" rel="noopener">
+          <div class="about-link js-open-qq" role="button">
             <svg viewBox="0 0 24 24"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/></svg>
             <span class="al-label">官方 QQ 群</span>
             <span class="al-value">247467529</span>
-          </a>
+          </div>
           <a class="about-link" href="https://github.com/g-pumxin/pumpkin-card-table" target="_blank" rel="noopener">
             <svg viewBox="0 0 24 24"><path d="M9 19c-5 1.5-5-2.5-7-3m14 6v-3.87a3.37 3.37 0 0 0-.94-2.61c3.14-.35 6.44-1.54 6.44-7A5.44 5.44 0 0 0 20 4.77 5.07 5.07 0 0 0 19.91 1S18.73.65 16 2.48a13.38 13.38 0 0 0-7 0C6.27.65 5.09 1 5.09 1A5.07 5.07 0 0 0 5 4.77a5.44 5.44 0 0 0-1.5 3.78c0 5.42 3.3 6.61 6.44 7A3.37 3.37 0 0 0 9 18.13V22"/></svg>
             <span class="al-label">GitHub 仓库</span>
@@ -1475,13 +1480,37 @@
     <div class="page-footer">
       © 2025 - 2026 十二引工作室 · 南瓜牌桌
       <span class="foot-sep">·</span>
-      <a href="https://qm.qq.com/q/247467529" target="_blank" rel="noopener">官方 QQ 群 247467529</a>
+      <a class="js-open-qq">官方 QQ 群 247467529</a>
     </div>
   </section>
 
 </main>
 
+<!-- ============ QQ 群浮层 ============ -->
+<div class="modal-overlay" id="qqModal">
+  <div class="modal">
+    <button class="modal-close" id="modalClose" aria-label="关闭">×</button>
+    <div class="modal-title">加入南瓜牌桌官方群</div>
+    <div class="modal-sub">扫码或搜索群号，获取最新版本与扩展包</div>
+    <div class="modal-qr">
+      <img src="images/qq-group.png" alt="QQ群二维码"
+           onerror="this.parentElement.innerHTML='<span style=\'color:#5A5448;font-size:12px;\'>二维码待上传 images/qq-group.png</span>'">
+    </div>
+    <div class="modal-groupnum">
+      <span id="groupNumText">247467529</span>
+      <button class="copy-btn" id="copyGroupNum">复制群号</button>
+    </div>
+    <a class="modal-join"
+       href="https://qun.qq.com/universal-share/share?ac=1&authKey=gVhgx7E9tALIbCVcU7JeHlG8YSLmfB9LC8eDFYPtsjfnI9VqsweJ%2BAP5ZIHFruxM&busi_data=eyJncm91cENvZGUiOiIyNDc0Njc1MjkiLCJ0b2tlbiI6IkpPUFNyeEc0WHJiMzIzSlpPNkZianF3aVo5Z0dKZDdiVjdINm9qTmxiUTdUTzlZOFUvMG1UcSt4aUxmdlF4b0YiLCJ1aW4iOiIyOTU2NTQ0MDI2In0%3D&data=R39mZkzGODdsgX3Tljlwi3B33IloavU9rmkIGqqp0YT-_pjmYL3CUcTxUMYP7d-i9iY-w8oyqhWW94qZfC9N-g&svctype=4&tempid=h5_group_info"
+       target="_blank" rel="noopener">
+      <svg viewBox="0 0 24 24"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/></svg>
+      点击跳转加群页面
+    </a>
+  </div>
+</div>
+
 <script>
+  /* ============ 侧边栏 ============ */
   const sidebar = document.getElementById('sidebar');
   const overlay = document.getElementById('overlay');
   const hamburger = document.getElementById('hamburger');
@@ -1501,6 +1530,7 @@
   });
   overlay.addEventListener('click', closeSidebar);
 
+  /* ============ 标签页切换 ============ */
   const PAGES = ['home', 'tutorial', 'changelog', 'about'];
 
   function switchPage(pageId) {
@@ -1526,36 +1556,67 @@
   window.addEventListener('hashchange', handleHash);
   window.addEventListener('DOMContentLoaded', handleHash);
 
-  // 如果首次加载没有任何 hash，默认切到 home
   if (!window.location.hash) {
     window.location.hash = 'home';
   }
+
+  /* ============ QQ 群浮层 ============ */
+  const qqModal = document.getElementById('qqModal');
+  const modalClose = document.getElementById('modalClose');
+
+  function openQQModal() {
+    qqModal.classList.add('show');
+    document.body.style.overflow = 'hidden';
+  }
+  function closeQQModal() {
+    qqModal.classList.remove('show');
+    document.body.style.overflow = '';
+  }
+
+  // 所有带 .js-open-qq 的元素统一绑定
+  document.querySelectorAll('.js-open-qq').forEach(el => {
+    el.addEventListener('click', (e) => {
+      e.preventDefault();
+      openQQModal();
+    });
+  });
+
+  modalClose.addEventListener('click', closeQQModal);
+  qqModal.addEventListener('click', (e) => {
+    if (e.target === qqModal) closeQQModal();
+  });
+  document.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape') closeQQModal();
+  });
+
+  // 复制群号
+  document.getElementById('copyGroupNum').addEventListener('click', function () {
+    const num = document.getElementById('groupNumText').textContent.trim();
+    const btn = this;
+    const done = () => {
+      btn.textContent = '已复制';
+      setTimeout(() => { btn.textContent = '复制群号'; }, 1500);
+    };
+    if (navigator.clipboard && navigator.clipboard.writeText) {
+      navigator.clipboard.writeText(num).then(done).catch(() => {
+        fallbackCopy(num); done();
+      });
+    } else {
+      fallbackCopy(num); done();
+    }
+  });
+
+  function fallbackCopy(text) {
+    const ta = document.createElement('textarea');
+    ta.value = text;
+    ta.style.position = 'fixed';
+    ta.style.opacity = '0';
+    document.body.appendChild(ta);
+    ta.select();
+    try { document.execCommand('copy'); } catch (e) {}
+    document.body.removeChild(ta);
+  }
 </script>
-<!-- QQ群浮层 -->
-<div class="modal-overlay" id="qqModal">
-  <div class="modal">
-    <button class="modal-close" id="modalClose" aria-label="关闭">×</button>
-    <div class="modal-title">加入南瓜牌桌官方群</div>
-    <div class="modal-sub">扫码或搜索群号，获取最新版本与扩展包</div>
-    <div class="modal-qr">
-      <!-- 把 images/qq-group.png 换成你的群二维码文件名 -->
-      <img src="images/qq-group.png" alt="QQ群二维码"
-           onerror="this.parentElement.innerHTML='<span style=\'color:#5A5448;font-size:12px;\'>二维码待上传</span>'">
-    </div>
-    <div class="modal-groupnum">
-      <span id="groupNumText">247467529</span>
-      <button class="copy-btn" id="copyGroupNum">复制群号</button>
-    </div>
-    <a class="modal-join"
-       href="https://qun.qq.com/universal-share/share?ac=1&authKey=gVhgx7E9tALIbCVcU7JeHlG8YSLmfB9LC8eDFYPtsjfnI9VqsweJ%2BAP5ZIHFruxM&busi_data=eyJncm91cENvZGUiOiIyNDc0Njc1MjkiLCJ0b2tlbiI6IkpPUFNyeEc0WHJiMzIzSlpPNkZianF3aVo5Z0dKZDdiVjdINm9qTmxiUTdUTzlZOFUvMG1UcSt4aUxmdlF4b0YiLCJ1aW4iOiIyOTU2NTQ0MDI2In0%3D&data=R39mZkzGODdsgX3Tljlwi3B33IloavU9rmkIGqqp0YT-_pjmYL3CUcTxUMYP7d-i9iY-w8oyqhWW94qZfC9N-g&svctype=4&tempid=h5_group_info"
-       target="_blank" rel="noopener">
-      <svg viewBox="0 0 24 24" width="17" height="17" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round">
-        <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/>
-        <circle cx="9" cy="7" r="4"/>
-      </svg>
-      点击跳转加群页面
-    </a>
-  </div>
-</div>
+
 </body>
 </html>
