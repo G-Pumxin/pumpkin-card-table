@@ -1,9 +1,1409 @@
 <!DOCTYPE html>
-<html>
+<html lang="zh-CN">
 <head>
-  <title>我的项目主页</title>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>南瓜牌桌 · 免费的三国杀 DIY 远程牌桌模拟器</title>
+<meta name="description" content="南瓜牌桌是由十二引工作室开发的，面向三国杀 DIY 玩家的远程牌桌模拟器。免代码、免费，像面杀一样手动操作每一张牌。">
+<link rel="icon" href="images/logo.png">
+<style>
+  :root {
+    --bg: #0A0A0A;
+    --sidebar-bg: #080808;
+    --card: #141414;
+    --card-hover: #1A1A1A;
+    --gold: #D4A029;
+    --orange: #FF6B00;
+    --grad: linear-gradient(135deg, #D4A029 0%, #FF6B00 100%);
+    --text: #EDE8DC;
+    --text-dim: #8A8275;
+    --text-faint: #5A5448;
+    --border: rgba(212, 160, 41, 0.12);
+    --border-hover: rgba(212, 160, 41, 0.35);
+    --sidebar-w: 220px;
+    --radius: 14px;
+    --max-content: 960px;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  html { scroll-behavior: smooth; }
+
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, "PingFang SC", "Microsoft YaHei",
+                 "Segoe UI", Roboto, "Helvetica Neue", sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    line-height: 1.75;
+    -webkit-font-smoothing: antialiased;
+    overflow-x: hidden;
+  }
+
+  a { color: inherit; text-decoration: none; }
+  img { max-width: 100%; display: block; }
+
+  /* ============ 侧边栏 ============ */
+  .sidebar {
+    position: fixed;
+    top: 0; left: 0; bottom: 0;
+    width: var(--sidebar-w);
+    background: var(--sidebar-bg);
+    border-right: 1px solid var(--border);
+    display: flex;
+    flex-direction: column;
+    z-index: 100;
+    transition: transform .3s ease;
+  }
+
+  .sidebar-header {
+    padding: 24px 20px 22px;
+    border-bottom: 1px solid var(--border);
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+  .sidebar-logo {
+    width: 42px;
+    height: 42px;
+    object-fit: contain;
+    border-radius: 10px;
+    flex-shrink: 0;
+  }
+  .sidebar-logo-fallback {
+    display: none;
+    width: 42px;
+    height: 42px;
+    border-radius: 10px;
+    background: var(--grad);
+    align-items: center;
+    justify-content: center;
+    font-size: 22px;
+    flex-shrink: 0;
+  }
+  .sidebar-title {
+    font-size: 15px;
+    font-weight: 700;
+    letter-spacing: .5px;
+    line-height: 1.3;
+  }
+  .sidebar-version {
+    font-size: 11.5px;
+    color: var(--text-faint);
+    font-family: ui-monospace, "SF Mono", Menlo, monospace;
+    margin-top: 2px;
+  }
+
+  .sidebar-nav {
+    padding: 20px 12px;
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    flex: 1;
+  }
+  .nav-item {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 12px 16px;
+    border-radius: 10px;
+    font-size: 14.5px;
+    color: var(--text-dim);
+    position: relative;
+    transition: background .2s, color .2s;
+    cursor: pointer;
+  }
+  .nav-item svg {
+    width: 18px; height: 18px;
+    stroke: currentColor;
+    stroke-width: 2;
+    fill: none;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+    flex-shrink: 0;
+  }
+  .nav-item:hover {
+    background: rgba(212, 160, 41, 0.06);
+    color: var(--gold);
+  }
+  .nav-item.active {
+    background: linear-gradient(90deg, rgba(212, 160, 41, 0.18), rgba(255, 107, 0, 0.06));
+    color: var(--text);
+    font-weight: 600;
+  }
+  .nav-item.active::before {
+    content: "";
+    position: absolute;
+    left: 0; top: 50%;
+    transform: translateY(-50%);
+    width: 3px; height: 22px;
+    background: var(--grad);
+    border-radius: 0 3px 3px 0;
+  }
+
+  .sidebar-footer {
+    padding: 18px 22px;
+    border-top: 1px solid var(--border);
+    font-size: 11.5px;
+    color: var(--text-faint);
+    line-height: 1.7;
+  }
+  .sidebar-footer a { color: var(--text-dim); transition: color .2s; }
+  .sidebar-footer a:hover { color: var(--gold); }
+
+  /* ============ 手机端顶部栏 ============ */
+  .mobile-topbar {
+    display: none;
+    position: fixed;
+    top: 0; left: 0; right: 0;
+    height: 56px;
+    background: rgba(8, 8, 8, 0.92);
+    backdrop-filter: blur(14px);
+    -webkit-backdrop-filter: blur(14px);
+    border-bottom: 1px solid var(--border);
+    z-index: 90;
+    align-items: center;
+    padding: 0 16px;
+    gap: 14px;
+  }
+  .hamburger {
+    width: 38px; height: 38px;
+    background: transparent;
+    border: 1px solid var(--border);
+    border-radius: 9px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    color: var(--gold);
+    transition: border-color .2s, background .2s;
+  }
+  .hamburger:hover { border-color: var(--border-hover); background: rgba(212,160,41,0.06); }
+  .hamburger svg {
+    width: 18px; height: 18px;
+    stroke: currentColor; stroke-width: 2; fill: none; stroke-linecap: round;
+  }
+  .mobile-title {
+    font-size: 15px;
+    font-weight: 700;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+  .mobile-title img { width: 26px; height: 26px; object-fit: contain; border-radius: 6px; }
+
+  .overlay {
+    display: none;
+    position: fixed;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.6);
+    z-index: 99;
+    opacity: 0;
+    transition: opacity .3s;
+  }
+  .overlay.show { opacity: 1; }
+
+  /* ============ 主内容 ============ */
+  .main {
+    margin-left: var(--sidebar-w);
+    min-height: 100vh;
+  }
+
+  .page { display: none; }
+  .page.active {
+    display: block;
+    animation: fadeIn .3s ease;
+  }
+  @keyframes fadeIn {
+    from { opacity: 0; transform: translateY(10px); }
+    to { opacity: 1; transform: none; }
+  }
+
+  .content {
+    max-width: var(--max-content);
+    margin: 0 auto;
+    padding: 0 32px;
+  }
+
+  /* ============ 通用组件 ============ */
+  .btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 9px;
+    padding: 13px 28px;
+    border-radius: 999px;
+    font-size: 14.5px;
+    font-weight: 600;
+    font-family: inherit;
+    border: none;
+    cursor: pointer;
+    transition: transform .2s, box-shadow .2s, background .2s, border-color .2s;
+    white-space: nowrap;
+  }
+  .btn svg {
+    width: 17px; height: 17px;
+    stroke: currentColor; stroke-width: 2; fill: none;
+    stroke-linecap: round; stroke-linejoin: round;
+  }
+  .btn-primary {
+    background: var(--grad);
+    color: #fff;
+    box-shadow: 0 6px 22px rgba(255, 107, 0, .3);
+  }
+  .btn-primary:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 10px 30px rgba(255, 107, 0, .45);
+  }
+  .btn-ghost {
+    background: rgba(212, 160, 41, 0.06);
+    color: var(--text);
+    border: 1px solid var(--border-hover);
+  }
+  .btn-ghost:hover {
+    background: rgba(212, 160, 41, 0.12);
+    transform: translateY(-2px);
+  }
+
+  .sec-tag {
+    display: inline-block;
+    font-size: 11.5px;
+    font-weight: 700;
+    letter-spacing: 2px;
+    color: var(--gold);
+    text-transform: uppercase;
+    margin-bottom: 12px;
+  }
+
+  h2.sec-title {
+    font-size: clamp(24px, 3.4vw, 32px);
+    font-weight: 800;
+    letter-spacing: -.3px;
+    line-height: 1.3;
+    margin-bottom: 14px;
+  }
+
+  .sec-desc {
+    color: var(--text-dim);
+    font-size: 15px;
+    max-width: 620px;
+    margin-bottom: 44px;
+  }
+
+  .section {
+    padding: 76px 0;
+    border-bottom: 1px solid var(--border);
+  }
+  .section:last-child { border-bottom: none; }
+
+  .grad-text {
+    background: var(--grad);
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+  }
+
+  /* ============ 首屏 ============ */
+  .hero {
+    padding: 96px 0 72px;
+    text-align: center;
+    position: relative;
+    overflow: hidden;
+  }
+  .hero-glow {
+    position: absolute;
+    border-radius: 50%;
+    filter: blur(110px);
+    pointer-events: none;
+    z-index: 0;
+  }
+  .hero-glow-1 {
+    width: 520px; height: 520px;
+    background: rgba(212, 160, 41, 0.16);
+    top: -120px; left: 50%;
+    transform: translateX(-50%);
+  }
+  .hero-glow-2 {
+    width: 360px; height: 360px;
+    background: rgba(255, 107, 0, 0.10);
+    top: 180px; right: 8%;
+  }
+  .hero-inner { position: relative; z-index: 1; }
+
+  .hero-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 12.5px;
+    color: var(--gold);
+    border: 1px solid var(--border-hover);
+    background: rgba(212, 160, 41, 0.06);
+    padding: 6px 16px;
+    border-radius: 999px;
+    margin-bottom: 28px;
+  }
+  .hero-badge .dot {
+    width: 6px; height: 6px;
+    border-radius: 50%;
+    background: var(--grad);
+    box-shadow: 0 0 8px var(--orange);
+    animation: pulse 2s infinite;
+  }
+  @keyframes pulse {
+    0%, 100% { opacity: 1; }
+    50% { opacity: .35; }
+  }
+
+  .hero h1 {
+    font-size: clamp(32px, 5vw, 52px);
+    font-weight: 800;
+    line-height: 1.25;
+    letter-spacing: -.5px;
+    margin-bottom: 22px;
+  }
+  .hero-sub {
+    font-size: clamp(15px, 1.9vw, 17px);
+    color: var(--text-dim);
+    max-width: 560px;
+    margin: 0 auto 12px;
+    line-height: 1.9;
+  }
+  .hero-line {
+    font-size: clamp(14px, 1.7vw, 15.5px);
+    color: var(--text-faint);
+    margin-bottom: 38px;
+  }
+  .hero-btns {
+    display: flex;
+    gap: 14px;
+    justify-content: center;
+    flex-wrap: wrap;
+    margin-bottom: 66px;
+  }
+
+  .hero-shot {
+    border-radius: 18px;
+    overflow: hidden;
+    border: 1px solid var(--border-hover);
+    box-shadow: 0 24px 60px rgba(0, 0, 0, 0.6), 0 0 0 1px rgba(212, 160, 41, 0.08);
+    position: relative;
+  }
+  .hero-shot img { width: 100%; display: block; }
+
+  /* ============ 简介 ============ */
+  .intro-grid {
+    display: grid;
+    grid-template-columns: 1.05fr 1fr;
+    gap: 56px;
+    align-items: center;
+  }
+  .intro-text p {
+    color: var(--text-dim);
+    font-size: 15px;
+    margin-bottom: 16px;
+    line-height: 1.95;
+  }
+  .intro-text strong { color: var(--text); font-weight: 600; }
+  .intro-quote {
+    border-left: 3px solid;
+    border-image: var(--grad) 1;
+    padding: 4px 0 4px 18px;
+    margin: 24px 0;
+    color: var(--gold);
+    font-size: 15px;
+    font-weight: 500;
+    line-height: 1.8;
+  }
+  .intro-cards {
+    display: grid;
+    gap: 12px;
+  }
+  .mini-card {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 16px 18px;
+    transition: border-color .2s, background .2s;
+  }
+  .mini-card:hover {
+    border-color: var(--border-hover);
+    background: var(--card-hover);
+  }
+  .mini-icon {
+    width: 40px; height: 40px;
+    border-radius: 10px;
+    background: rgba(212, 160, 41, 0.1);
+    border: 1px solid rgba(212, 160, 41, 0.18);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    color: var(--gold);
+  }
+  .mini-icon svg {
+    width: 19px; height: 19px;
+    stroke: currentColor; stroke-width: 2; fill: none;
+    stroke-linecap: round; stroke-linejoin: round;
+  }
+  .mini-title { font-size: 14px; font-weight: 600; line-height: 1.4; }
+  .mini-sub { font-size: 12.5px; color: var(--text-faint); margin-top: 1px; }
+
+  /* ============ 功能卡片 ============ */
+  .feat-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 16px;
+  }
+  .feat {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 28px 24px;
+    transition: transform .25s, border-color .25s, background .25s;
+  }
+  .feat:hover {
+    transform: translateY(-4px);
+    border-color: var(--border-hover);
+    background: var(--card-hover);
+  }
+  .feat-icon {
+    width: 44px; height: 44px;
+    border-radius: 12px;
+    background: rgba(212, 160, 41, 0.1);
+    border: 1px solid rgba(212, 160, 41, 0.2);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--gold);
+    margin-bottom: 18px;
+  }
+  .feat-icon svg {
+    width: 21px; height: 21px;
+    stroke: currentColor; stroke-width: 2; fill: none;
+    stroke-linecap: round; stroke-linejoin: round;
+  }
+  .feat h3 {
+    font-size: 16px;
+    font-weight: 700;
+    margin-bottom: 8px;
+    letter-spacing: .2px;
+  }
+  .feat p {
+    font-size: 13.5px;
+    color: var(--text-dim);
+    line-height: 1.85;
+  }
+
+  /* ============ 截图 ============ */
+  .shots {
+    display: grid;
+    gap: 18px;
+  }
+  .shot {
+    border-radius: 16px;
+    overflow: hidden;
+    border: 1px solid var(--border);
+    background: var(--card);
+    position: relative;
+    aspect-ratio: 16 / 9;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  .shot::before {
+    content: attr(data-label);
+    color: var(--text-faint);
+    font-size: 13px;
+    letter-spacing: 1px;
+    padding: 0 20px;
+    text-align: center;
+  }
+  .shot img {
+    width: 100%; height: 100%;
+    object-fit: cover;
+    display: block;
+  }
+  .shot-wide { grid-column: 1 / -1; }
+  .shots-row {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 18px;
+  }
+
+  /* ============ 上手步骤 ============ */
+  .steps {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 16px;
+  }
+  .step {
+    padding: 26px 22px;
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    position: relative;
+    transition: border-color .2s, transform .2s;
+  }
+  .step:hover {
+    border-color: var(--border-hover);
+    transform: translateY(-3px);
+  }
+  .step-num {
+    font-size: 30px;
+    font-weight: 800;
+    line-height: 1;
+    background: var(--grad);
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+    opacity: .55;
+    margin-bottom: 14px;
+    display: block;
+    letter-spacing: -1px;
+    font-family: ui-monospace, "SF Mono", Menlo, monospace;
+  }
+  .step h3 {
+    font-size: 15px;
+    font-weight: 700;
+    margin-bottom: 8px;
+  }
+  .step p {
+    font-size: 13px;
+    color: var(--text-dim);
+    line-height: 1.8;
+  }
+
+  /* ============ 快捷键表 ============ */
+  .keys {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(230px, 1fr));
+    gap: 10px;
+  }
+  .key-row {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 12px 16px;
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    transition: border-color .2s, background .2s;
+  }
+  .key-row:hover {
+    border-color: var(--border-hover);
+    background: var(--card-hover);
+  }
+  kbd {
+    font-family: ui-monospace, "SF Mono", Menlo, Consolas, monospace;
+    font-size: 11.5px;
+    font-weight: 600;
+    background: rgba(212, 160, 41, 0.1);
+    color: var(--gold);
+    border: 1px solid rgba(212, 160, 41, 0.28);
+    border-radius: 6px;
+    padding: 4px 9px;
+    white-space: nowrap;
+    flex-shrink: 0;
+    min-width: 30px;
+    text-align: center;
+  }
+  .key-desc {
+    font-size: 13px;
+    color: var(--text-dim);
+    line-height: 1.5;
+  }
+
+  /* ============ FAQ ============ */
+  .faq-list {
+    display: grid;
+    gap: 10px;
+  }
+  details {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    overflow: hidden;
+    transition: border-color .2s;
+  }
+  details[open] { border-color: var(--border-hover); }
+  summary {
+    padding: 18px 22px;
+    font-size: 15px;
+    font-weight: 600;
+    cursor: pointer;
+    list-style: none;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+    transition: color .2s;
+  }
+  summary::-webkit-details-marker { display: none; }
+  summary::after {
+    content: "+";
+    font-size: 20px;
+    font-weight: 300;
+    color: var(--gold);
+    transition: transform .25s;
+    flex-shrink: 0;
+    line-height: 1;
+  }
+  details[open] summary::after { transform: rotate(45deg); }
+  summary:hover { color: var(--gold); }
+  .faq-body {
+    padding: 0 22px 20px;
+    font-size: 14px;
+    color: var(--text-dim);
+    line-height: 1.9;
+  }
+
+  /* ============ 教程页 ============ */
+  .tut-block {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 32px;
+    margin-bottom: 20px;
+  }
+  .tut-block h3 {
+    font-size: 19px;
+    font-weight: 700;
+    margin-bottom: 6px;
+    color: var(--gold);
+  }
+  .tut-block .tut-sub {
+    font-size: 13px;
+    color: var(--text-faint);
+    margin-bottom: 22px;
+    padding-bottom: 18px;
+    border-bottom: 1px solid var(--border);
+  }
+  .tut-placeholder {
+    color: var(--text-faint);
+    font-size: 14px;
+    font-style: italic;
+    padding: 24px 0;
+    text-align: center;
+    border: 1px dashed var(--border-hover);
+    border-radius: 10px;
+    background: rgba(212, 160, 41, 0.02);
+  }
+
+  /* ============ 更新日志 ============ */
+  .log-year {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    margin: 44px 0 22px;
+    font-size: 22px;
+    font-weight: 800;
+    color: var(--gold);
+    letter-spacing: 1px;
+  }
+  .log-year::after {
+    content: "";
+    flex: 1;
+    height: 1px;
+    background: linear-gradient(90deg, var(--border-hover), transparent);
+  }
+  .log-list { display: grid; gap: 0; }
+  .log-item {
+    display: flex;
+    gap: 22px;
+    padding: 16px 4px;
+    border-bottom: 1px solid var(--border);
+    transition: background .2s;
+  }
+  .log-item:last-child { border-bottom: none; }
+  .log-item:hover {
+    background: rgba(212, 160, 41, 0.03);
+    border-radius: 8px;
+  }
+  .log-date {
+    font-family: ui-monospace, "SF Mono", Menlo, monospace;
+    font-size: 12.5px;
+    font-weight: 600;
+    color: var(--gold);
+    white-space: nowrap;
+    padding-top: 3px;
+    min-width: 82px;
+    flex-shrink: 0;
+  }
+  .log-text {
+    font-size: 14px;
+    color: var(--text-dim);
+    line-height: 1.85;
+  }
+
+  /* ============ 关于我们 ============ */
+  .about-block {
+    margin-bottom: 36px;
+  }
+  .about-block h3 {
+    font-size: 16px;
+    font-weight: 700;
+    color: var(--gold);
+    margin-bottom: 14px;
+    letter-spacing: .3px;
+  }
+  .about-block p {
+    font-size: 14.5px;
+    color: var(--text-dim);
+    line-height: 1.95;
+    margin-bottom: 10px;
+  }
+  .member-list {
+    display: grid;
+    gap: 10px;
+  }
+  .member {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    padding: 14px 18px;
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    font-size: 14px;
+  }
+  .member-role {
+    color: var(--gold);
+    font-weight: 600;
+    font-size: 13px;
+    min-width: 66px;
+  }
+  .member-name { color: var(--text); }
+  .about-links {
+    display: grid;
+    gap: 10px;
+  }
+  .about-link {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 14px 18px;
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    font-size: 14px;
+    transition: border-color .2s, background .2s;
+  }
+  .about-link:hover {
+    border-color: var(--border-hover);
+    background: var(--card-hover);
+  }
+  .about-link .al-label {
+    color: var(--gold);
+    font-weight: 600;
+    min-width: 84px;
+    font-size: 13px;
+  }
+  .about-link .al-value { color: var(--text); }
+  .about-link svg {
+    width: 17px; height: 17px;
+    stroke: var(--gold); stroke-width: 2; fill: none;
+    stroke-linecap: round; stroke-linejoin: round;
+    flex-shrink: 0;
+  }
+
+  /* ============ 页脚 ============ */
+  .page-footer {
+    padding: 40px 0 60px;
+    border-top: 1px solid var(--border);
+    text-align: center;
+    color: var(--text-faint);
+    font-size: 12.5px;
+    line-height: 1.9;
+  }
+  .page-footer a { color: var(--text-dim); transition: color .2s; }
+  .page-footer a:hover { color: var(--gold); }
+  .page-footer .foot-sep { margin: 0 10px; opacity: .5; }
+
+  /* ============ 响应式 ============ */
+  @media (max-width: 900px) {
+    .sidebar {
+      transform: translateX(-100%);
+      width: 260px;
+    }
+    .sidebar.open { transform: translateX(0); }
+    .overlay { display: block; pointer-events: none; }
+    .overlay.show { pointer-events: auto; }
+    .mobile-topbar { display: flex; }
+    .main { margin-left: 0; padding-top: 56px; }
+    .content { padding: 0 20px; }
+    .hero { padding: 56px 0 48px; }
+    .hero-btns { margin-bottom: 44px; }
+    .intro-grid { grid-template-columns: 1fr; gap: 32px; }
+    .feat-grid { grid-template-columns: repeat(2, 1fr); }
+    .steps { grid-template-columns: repeat(2, 1fr); }
+    .section { padding: 56px 0; }
+    .shots-row { grid-template-columns: 1fr; }
+  }
+
+  @media (max-width: 620px) {
+    .content { padding: 0 16px; }
+    .feat-grid { grid-template-columns: 1fr; }
+    .steps { grid-template-columns: 1fr; }
+    .hero-btns { flex-direction: column; }
+    .btn { width: 100%; justify-content: center; }
+    .log-item { flex-direction: column; gap: 6px; }
+    .log-date { min-width: auto; }
+    .tut-block { padding: 22px 18px; }
+    .about-link { flex-wrap: wrap; }
+  }
+</style>
 </head>
 <body>
-  <h1>Hello, GitHub Pages!</h1>
+
+<!-- ============ 手机端顶部栏 ============ -->
+<div class="mobile-topbar">
+  <button class="hamburger" id="hamburger" aria-label="菜单">
+    <svg viewBox="0 0 24 24"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
+  </button>
+  <div class="mobile-title">
+    <img src="images/logo.png" alt="" onerror="this.style.display='none'">
+    南瓜牌桌
+  </div>
+</div>
+
+<!-- ============ 侧边栏 ============ -->
+<aside class="sidebar" id="sidebar">
+  <div class="sidebar-header">
+    <img src="images/logo.png" alt="南瓜牌桌" class="sidebar-logo"
+         onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">
+    <div class="sidebar-logo-fallback">🎃</div>
+    <div>
+      <div class="sidebar-title">南瓜牌桌</div>
+      <div class="sidebar-version">v2026.10.7</div>
+    </div>
+  </div>
+
+  <nav class="sidebar-nav">
+    <a href="#home" class="nav-item" data-page="home">
+      <svg viewBox="0 0 24 24"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
+      <span>首页</span>
+    </a>
+    <a href="#tutorial" class="nav-item" data-page="tutorial">
+      <svg viewBox="0 0 24 24"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/></svg>
+      <span>教程</span>
+    </a>
+    <a href="#changelog" class="nav-item" data-page="changelog">
+      <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+      <span>更新日志</span>
+    </a>
+    <a href="#about" class="nav-item" data-page="about">
+      <svg viewBox="0 0 24 24"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+      <span>关于我们</span>
+    </a>
+  </nav>
+
+  <div class="sidebar-footer">
+    十二引工作室<br>
+    © 2025 - 2026
+  </div>
+</aside>
+
+<div class="overlay" id="overlay"></div>
+
+<!-- ============ 主内容 ============ -->
+<main class="main">
+
+  <!-- ========== 首页 ========== -->
+  <section class="page" id="page-home">
+    <div class="hero">
+      <div class="hero-glow hero-glow-1"></div>
+      <div class="hero-glow hero-glow-2"></div>
+      <div class="content hero-inner">
+        <div class="hero-badge">
+          <span class="dot"></span>
+          持续更新中 · 最新版本 2026.10.7
+        </div>
+        <h1>不会写代码<br>也能线上玩<span class="grad-text">自己设计的武将</span></h1>
+        <p class="hero-sub">南瓜牌桌 —— 免费的三国杀 DIY 远程牌桌模拟器</p>
+        <p class="hero-line">像面杀一样，手动操作每一张牌</p>
+
+        <div class="hero-btns">
+          <a class="btn btn-primary" href="https://github.com/g-pumxin/pumpkin-card-table/releases/latest" target="_blank" rel="noopener">
+            <svg viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+            下载最新版
+          </a>
+          <a class="btn btn-ghost" href="https://qm.qq.com/q/247467529" target="_blank" rel="noopener">
+            <svg viewBox="0 0 24 24"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/></svg>
+            加入 QQ 群
+          </a>
+        </div>
+
+        <div class="hero-shot">
+          <img src="images/hero.png" alt="南瓜牌桌主界面" loading="lazy"
+               onerror="this.parentElement.innerHTML='<div style=\'padding:80px 20px;text-align:center;color:var(--text-faint);font-size:14px;\'>主界面截图 · 待上传 images/hero.png</div>'">
+        </div>
+      </div>
+    </div>
+
+    <!-- 简介 -->
+    <div class="section">
+      <div class="content">
+        <div class="intro-grid">
+          <div class="intro-text">
+            <div class="sec-tag">关于项目</div>
+            <h2 class="sec-title">为 DIY 玩家准备的线上牌桌</h2>
+            <p>在线上玩自己 DIY 的武将，最麻烦的往往不是设计，而是<strong>实现</strong>——要么学会写代码，要么忍受各种规则引擎的限制。</p>
+            <p>南瓜牌桌选择了另一条路：<strong>像面杀一样，手动操作每一张牌</strong>。你可以拖拽、旋转、翻面、摊牌、叠牌，随意处理牌堆与手牌区，而不需要为任何一张 DIY 武将写一行代码。</p>
+            <div class="intro-quote">只要你和朋友们熟悉面杀规则，就能在线上还原一场完整的三国杀。</div>
+            <p>项目由十二引工作室开发，官方 QQ 群长期提供扩展包与技术支持，欢迎所有三国杀 DIY 爱好者加入。</p>
+          </div>
+          <div class="intro-cards">
+            <div class="mini-card">
+              <div class="mini-icon"><svg viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="12" cy="12" r="3"/></svg></div>
+              <div>
+                <div class="mini-title">免代码 DIY</div>
+                <div class="mini-sub">设计武将不需要写一行代码</div>
+              </div>
+            </div>
+            <div class="mini-card">
+              <div class="mini-icon"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg></div>
+              <div>
+                <div class="mini-title">远程联机</div>
+                <div class="mini-sub">创建房间 · 跨平台连接</div>
+              </div>
+            </div>
+            <div class="mini-card">
+              <div class="mini-icon"><svg viewBox="0 0 24 24"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/><polyline points="3.27 6.96 12 12.01 20.73 6.96"/><line x1="12" y1="22.08" x2="12" y2="12"/></svg></div>
+              <div>
+                <div class="mini-title">扩展包</div>
+                <div class="mini-sub">武将 · 牌堆 · 标记</div>
+              </div>
+            </div>
+            <div class="mini-card">
+              <div class="mini-icon"><svg viewBox="0 0 24 24"><circle cx="13.5" cy="6.5" r="2.5"/><circle cx="17.5" cy="10.5" r="2.5"/><circle cx="8.5" cy="7.5" r="2.5"/><circle cx="6.5" cy="12.5" r="2.5"/><path d="M12 2C6.5 2 2 6.5 2 12s4.5 10 10 10c.9 0 1.8-.1 2.6-.4"/></svg></div>
+              <div>
+                <div class="mini-title">资源包</div>
+                <div class="mini-sub">背景 · 音效 · 个性化</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 核心功能 -->
+    <div class="section">
+      <div class="content">
+        <div class="sec-tag">核心功能</div>
+        <h2 class="sec-title">你能用它做什么</h2>
+        <p class="sec-desc">从联机、卡牌操作到扩展管理，覆盖一场线上牌局所需的全部环节。</p>
+
+        <div class="feat-grid">
+          <div class="feat">
+            <div class="feat-icon"><svg viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M8 12h8"/></svg></div>
+            <h3>手动操作每一张牌</h3>
+            <p>拖拽、旋转、翻面、摊牌、堆牌、拉框多选，操作手感贴近真实牌桌。</p>
+          </div>
+          <div class="feat">
+            <div class="feat-icon"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg></div>
+            <h3>远程联机对局</h3>
+            <p>创建服务端与客户端，跨平台连接，支持断线重连与主机数据同步。</p>
+          </div>
+          <div class="feat">
+            <div class="feat-icon"><svg viewBox="0 0 24 24"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/><polyline points="3.27 6.96 12 12.01 20.73 6.96"/><line x1="12" y1="22.08" x2="12" y2="12"/></svg></div>
+            <h3>扩展包自由定义</h3>
+            <p>武将、牌堆、标记均可自定义，打包为 .pct 文件一键导入，不同牌堆可含同名牌。</p>
+          </div>
+          <div class="feat">
+            <div class="feat-icon"><svg viewBox="0 0 24 24"><circle cx="13.5" cy="6.5" r="2.5"/><circle cx="17.5" cy="10.5" r="2.5"/><circle cx="8.5" cy="7.5" r="2.5"/><circle cx="6.5" cy="12.5" r="2.5"/><path d="M12 2C6.5 2 2 6.5 2 12s4.5 10 10 10c.9 0 1.8-.1 2.6-.4"/></svg></div>
+            <h3>资源包个性化</h3>
+            <p>自定义牌背、卡牌大小、桌布和音效，让本地展示完全符合你的喜好，不影响对局。</p>
+          </div>
+          <div class="feat">
+            <div class="feat-icon"><svg viewBox="0 0 24 24"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg></div>
+            <h3>观众席与座位圆盘</h3>
+            <p>旁观者不影响游戏进程；Tab 唤出座位圆盘，一键提示对应玩家。</p>
+          </div>
+          <div class="feat">
+            <div class="feat-icon"><svg viewBox="0 0 24 24"><rect x="2" y="6" width="20" height="12" rx="2"/><line x1="6" y1="10" x2="6" y2="10"/><line x1="10" y1="10" x2="10" y2="10"/><line x1="14" y1="10" x2="14" y2="10"/><line x1="18" y1="10" x2="18" y2="10"/><line x1="8" y1="14" x2="16" y2="14"/></svg></div>
+            <h3>丰富的快捷键</h3>
+            <p>WASD 移动镜头、G 检索牌、Q 堆牌、E 摊牌、B 观看横版牌、T 旋转，效率翻倍。</p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 实机截图 -->
+    <div class="section">
+      <div class="content">
+        <div class="sec-tag">实机截图</div>
+        <h2 class="sec-title">看看它长什么样</h2>
+        <p class="sec-desc">牌桌全景、检索功能、座位圆盘与卡牌预览。</p>
+
+        <div class="shots">
+          <div class="shot shot-wide" data-label="牌桌全景 · images/table.png">
+            <img src="images/table.png" alt="牌桌全景" loading="lazy" onerror="this.style.display='none'">
+          </div>
+          <div class="shots-row">
+            <div class="shot" data-label="检索功能 · images/search.png">
+              <img src="images/search.png" alt="检索功能" loading="lazy" onerror="this.style.display='none'">
+            </div>
+            <div class="shot" data-label="座位圆盘 · images/seats.png">
+              <img src="images/seats.png" alt="座位圆盘" loading="lazy" onerror="this.style.display='none'">
+            </div>
+          </div>
+          <div class="shot shot-wide" data-label="卡牌预览 · images/preview.png">
+            <img src="images/preview.png" alt="卡牌预览" loading="lazy" onerror="this.style.display='none'">
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 快速上手 -->
+    <div class="section">
+      <div class="content">
+        <div class="sec-tag">快速上手</div>
+        <h2 class="sec-title">四步开始一场对局</h2>
+        <p class="sec-desc">不需要写代码，不需要搭建服务器，跟着步骤就能玩。</p>
+
+        <div class="steps">
+          <div class="step">
+            <span class="step-num">01</span>
+            <h3>下载软件</h3>
+            <p>从 GitHub Releases 或官方 QQ 群文件下载最新版压缩包，解压即用。</p>
+          </div>
+          <div class="step">
+            <span class="step-num">02</span>
+            <h3>创建或加入房间</h3>
+            <p>房主创建服务端，其他玩家输入 IP 连接；跨内网需要 TCP 隧道穿透。</p>
+          </div>
+          <div class="step">
+            <span class="step-num">03</span>
+            <h3>加载扩展包</h3>
+            <p>在房间设置中导入 .pct 扩展包，配置武将池、牌堆与预设方案。</p>
+          </div>
+          <div class="step">
+            <span class="step-num">04</span>
+            <h3>开始对局</h3>
+            <p>分配座位、发好身份牌与体力牌，像面杀一样手动操作每一张牌。</p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 快捷键 -->
+    <div class="section">
+      <div class="content">
+        <div class="sec-tag">操作说明</div>
+        <h2 class="sec-title">常用快捷键一览</h2>
+        <p class="sec-desc">熟悉这些按键，能让你在对局中操作得更流畅。游戏内也提供完整的操作说明页。</p>
+
+        <div class="keys">
+          <div class="key-row"><kbd>W A S D</kbd><span class="key-desc">移动镜头</span></div>
+          <div class="key-row"><kbd>↑ ↓ ← →</kbd><span class="key-desc">移动镜头</span></div>
+          <div class="key-row"><kbd>滚轮</kbd><span class="key-desc">镜头缩放</span></div>
+          <div class="key-row"><kbd>中键</kbd><span class="key-desc">重置视角与缩放</span></div>
+          <div class="key-row"><kbd>左键拖拽</kbd><span class="key-desc">移动卡牌</span></div>
+          <div class="key-row"><kbd>右键</kbd><span class="key-desc">多选卡牌</span></div>
+          <div class="key-row"><kbd>Ctrl + 左右键</kbd><span class="key-desc">加选 / 减选</span></div>
+          <div class="key-row"><kbd>拉框</kbd><span class="key-desc">批量选中卡牌</span></div>
+          <div class="key-row"><kbd>Q</kbd><span class="key-desc">堆牌</span></div>
+          <div class="key-row"><kbd>E</kbd><span class="key-desc">摊牌</span></div>
+          <div class="key-row"><kbd>G</kbd><span class="key-desc">检索鼠标位置的牌</span></div>
+          <div class="key-row"><kbd>B</kbd><span class="key-desc">观看横版牌</span></div>
+          <div class="key-row"><kbd>T</kbd><span class="key-desc">旋转观看中的牌</span></div>
+          <div class="key-row"><kbd>V</kbd><span class="key-desc">按住观看牌面</span></div>
+          <div class="key-row"><kbd>Tab</kbd><span class="key-desc">唤出座位圆盘</span></div>
+          <div class="key-row"><kbd>1 / 2</kbd><span class="key-desc">送花 / 砸蛋</span></div>
+          <div class="key-row"><kbd>F11</kbd><span class="key-desc">切换全屏 / 窗口</span></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- FAQ -->
+    <div class="section">
+      <div class="content">
+        <div class="sec-tag">常见问题</div>
+        <h2 class="sec-title">你可能想问</h2>
+        <div class="faq-list">
+          <details>
+            <summary>南瓜牌桌是免费的吗？</summary>
+            <div class="faq-body">是的，项目完全免费，并且持续更新。你可以从 GitHub Releases 或官方 QQ 群获取最新版本和扩展包。</div>
+          </details>
+          <details>
+            <summary>支持哪些操作系统？</summary>
+            <div class="faq-body">支持 Windows 与 macOS。跨平台联机已经过多轮测试，Mac 连 Windows 也能正常工作。</div>
+          </details>
+          <details>
+            <summary>联机需要自己搭服务器吗？</summary>
+            <div class="faq-body">不需要专门搭服务器。房主在软件内创建服务端，其他玩家输入 IP 即可连接。如果双方不在同一局域网内，需要使用 TCP 协议的内网穿透隧道。</div>
+          </details>
+          <details>
+            <summary>我需要会编程才能 DIY 武将吗？</summary>
+            <div class="faq-body">完全不需要。南瓜牌桌的设计初衷就是让 DIY 玩家不必学习代码——所有武将、牌堆、标记都通过扩展包配置，进入牌桌后手动操作每一张牌即可。</div>
+          </details>
+          <details>
+            <summary>扩展包和资源包有什么区别？</summary>
+            <div class="faq-body">扩展包（.pct）作用于对局内的武将、牌堆和标记，直接影响怎么玩；资源包作用于本地展示，比如背景图片和音效，不影响任何操作，纯个性化。</div>
+          </details>
+          <details>
+            <summary>和桌游模拟器（TTS）有什么区别？</summary>
+            <div class="faq-body">南瓜牌桌专为三国杀 DIY 场景设计，内置了身份牌、体力牌、手牌区、弃牌堆、牌盒、牌堆等三国内核所需的元素，并提供检索、堆牌、摊牌、座位圆盘等针对性功能，操作习惯更贴近面杀。</div>
+          </details>
+        </div>
+      </div>
+    </div>
+
+    <div class="page-footer">
+      © 2025 - 2026 十二引工作室 · 南瓜牌桌
+      <span class="foot-sep">·</span>
+      <a href="https://qm.qq.com/q/247467529" target="_blank" rel="noopener">官方 QQ 群 247467529</a>
+    </div>
+  </section>
+
+  <!-- ========== 教程 ========== -->
+  <section class="page" id="page-tutorial">
+    <div class="content" style="padding-top:64px;">
+      <div class="sec-tag">教程</div>
+      <h2 class="sec-title" style="margin-bottom:8px;">安装与扩展制作</h2>
+      <p class="sec-desc">从下载安装到写出第一个扩展包，分两部分说明。</p>
+
+      <div class="tut-block">
+        <h3>一、安装教程</h3>
+        <div class="tut-sub">从下载到进入牌桌</div>
+        <div class="tut-placeholder">
+          安装教程内容待补充<br>
+          <span style="font-size:12.5px;">（将在此处按原文分节展示，可插入截图与折叠步骤）</span>
+        </div>
+      </div>
+
+      <div class="tut-block">
+        <h3>二、扩展制作教程</h3>
+        <div class="tut-sub">从了解结构到打包 .pct</div>
+        <div class="tut-placeholder">
+          扩展制作教程内容待补充<br>
+          <span style="font-size:12.5px;">（将在此处按原文分节展示，可插入示例与图文说明）</span>
+        </div>
+      </div>
+
+      <div style="text-align:center;color:var(--text-faint);font-size:13px;padding:12px 0 20px;">
+        完整教程也会以 PDF 形式在官方 QQ 群内提供
+      </div>
+    </div>
+
+    <div class="page-footer">
+      © 2025 - 2026 十二引工作室 · 南瓜牌桌
+      <span class="foot-sep">·</span>
+      <a href="https://qm.qq.com/q/247467529" target="_blank" rel="noopener">官方 QQ 群 247467529</a>
+    </div>
+  </section>
+
+  <!-- ========== 更新日志 ========== -->
+  <section class="page" id="page-changelog">
+    <div class="content" style="padding-top:64px;">
+      <div class="sec-tag">更新日志</div>
+      <h2 class="sec-title" style="margin-bottom:8px;">持续迭代中</h2>
+      <p class="sec-desc">从最初的原型到今天，南瓜牌桌一直在更新。以下为完整记录，按时间倒序。</p>
+
+      <div class="log-year">2026</div>
+      <div class="log-list">
+        <div class="log-item"><div class="log-date">2026.10.7</div><div class="log-text">修复了同步主机数据失败的问题；旋转视角不再同时旋转手牌区；鼠标中键会一并重置视角旋转；主界面扩展不正确的玩家名字会标红；牌堆类型增加了“无框标记”。</div></div>
+        <div class="log-item"><div class="log-date">2026.9.17</div><div class="log-text">修复了默认资源包中体力牌方向错误的 bug。</div></div>
+        <div class="log-item"><div class="log-date">2026.9.13</div><div class="log-text">增加了座位圆盘功能：按 Tab 唤出，左键单击可以令对应玩家屏幕闪烁，右键单击取消闪烁；可以旋转相机；暂时删除了玩家列表功能；调整了扩展读取页面的字体；优化了默认体力牌的图片；修复了卡牌大小调整导致错位的 bug；删除了一些调试信息。</div></div>
+        <div class="log-item"><div class="log-date">2026.8.31</div><div class="log-text">修复了卡牌大小不正常生效的 bug。</div></div>
+        <div class="log-item"><div class="log-date">2026.8.21</div><div class="log-text">修复了默认体力牌过小的 bug；删除了未使用的字体文件。</div></div>
+        <div class="log-item"><div class="log-date">2026.8.20</div><div class="log-text">修改了主界面的字体，并略微调整了部分文字的位置以匹配新字体；修改体力牌的默认图片，并将体力牌改为 5 张 1/2、25 张 3/4、5 张 5/4；自定义卡牌大小增加了上下界 [0.4, 25]；主界面增加了版权信息和版本号验证；游戏暂停页操作说明增加了 F11 切换窗口/全屏。</div></div>
+        <div class="log-item"><div class="log-date">2026.8.19</div><div class="log-text">优化了扩展读取，现在不同牌堆中可以有同名牌；增加了自定义牌背；增加了自定义卡牌大小；修复了重启时手牌区会透视牌堆的 bug；修复了牌旋转回原位时手牌区依然透视的 bug。</div></div>
+        <div class="log-item"><div class="log-date">2026.8.2</div><div class="log-text">修复了重开游戏后手牌区不能带牌一起移动的 bug；增加了 Tab 显示玩家列表的功能；删除了 z 键（释放拿着的牌）；给按键说明增加了滑轮；把 .pck 文件合并进 .exe 里了。</div></div>
+        <div class="log-item"><div class="log-date">2026.7.26</div><div class="log-text">修复了 webp 读取不正常导致无法进入游戏的 bug；修复了手牌区内有牌时重启游戏会导致崩溃的 bug；修复了投掷物渲染图层错误的 bug。</div></div>
+        <div class="log-item"><div class="log-date">2026.7.18</div><div class="log-text">将默认资源包内置了；修复了读取扩展计数不正确的 bug；扩展支持 .webp 格式的图片了；可以在主界面预览牌了，长按左键预览，单击右键旋转。</div></div>
+        <div class="log-item"><div class="log-date">2026.7.5</div><div class="log-text">修复了重开游戏时投掷物不清空的 bug。</div></div>
+        <div class="log-item"><div class="log-date">2026.6.23</div><div class="log-text">修复了重开游戏时如果手上拿着牌就会崩溃的 bug；修复了重开游戏时标记不清空的 bug；修复了检索牌时翻页和镜头缩放同时生效的 bug；修复了确定检索牌时不自动拿起牌、关闭检索页面的 bug；修复了相机移动速度异常的 bug；修复了同步主机数据不能同步手牌区方向和标记位置的 bug；增加了送花和砸蛋的按键说明。</div></div>
+        <div class="log-item"><div class="log-date">2026.6.22</div><div class="log-text">增加了送花和砸蛋功能（1 送花 2 砸蛋）。</div></div>
+        <div class="log-item"><div class="log-date">2026.5.31</div><div class="log-text">将桌布放大至 1.5 倍；将牌盒移动到桌布外，所有玩家调回按 360° 分配座位（1 号位角度为 16°），摄像机初始位置改为牌盒上；修复了手牌区内的卡牌旋转后仍能透视的 bug；增加了移动手牌区时同步移动手牌的功能。</div></div>
+        <div class="log-item"><div class="log-date">2026.4.28</div><div class="log-text">优化了网络逻辑和卡牌移动逻辑。</div></div>
+        <div class="log-item"><div class="log-date">2026.4.11</div><div class="log-text">将牌盒向左移动了一点，远离弃牌堆，给桌子留出更多空间；放大了桌布；修复了摊牌和叠牌不受手牌区透视的 bug。</div></div>
+        <div class="log-item"><div class="log-date">2026.3.24</div><div class="log-text">增加了选中的牌的计数板；将设置保存在文件中。</div></div>
+        <div class="log-item"><div class="log-date">2026.3.23</div><div class="log-text">增加了设置页，将操作说明和设置放在标签页容器中；增加了 Ctrl 键，配合左右键加减选；Ctrl 键可以在拉框时使用了。</div></div>
+        <div class="log-item"><div class="log-date">2026.3.22</div><div class="log-text">增加了拉框功能；将镜头缩放的按键改为滑轮，并修改了默认镜头缩放速度；重置镜头缩放的同时会回到原位；在鼠标不在牌上时快捷键仍能生效；增加了 Q 键堆牌、E 键摊牌功能；优化了左键拖拽逻辑；操作说明会随窗口大小变化而变化。</div></div>
+        <div class="log-item"><div class="log-date">2026.3.21</div><div class="log-text">修复了字体 bug；添加了操作说明；被选中的牌会用蓝色覆盖；可以一次性操作多张牌（目前只能用右键来多选牌）。</div></div>
+        <div class="log-item"><div class="log-date">2026.2.16</div><div class="log-text">修复了未分堆牌堆不进游戏的 bug；修复了桌布乱飞的 bug。</div></div>
+        <div class="log-item"><div class="log-date">2026.2.14</div><div class="log-text">扩展改为 zip 压缩包格式，并定义后缀名为 .pct；增加了打包扩展按钮，会把“待打包扩展”文件夹中的扩展打包到“扩展”文件夹里。</div></div>
+        <div class="log-item"><div class="log-date">2026.2.13</div><div class="log-text">修复了读取扩展时的部分问题；增加了把扩展包文件夹压缩为压缩包的功能；正在重写读取扩展……</div></div>
+        <div class="log-item"><div class="log-date">2026.2.1</div><div class="log-text">标记和桌布旋转到玩家方向。</div></div>
+        <div class="log-item"><div class="log-date">2026.1.31</div><div class="log-text">游戏内松开鼠标时不管鼠标下是否有牌都会终止拖动牌；手牌区可以自由拖拽和拉伸。</div></div>
+        <div class="log-item"><div class="log-date">2026.1.25</div><div class="log-text">增加了手牌区，与手牌区有交集的牌会显示半透明正面（身份牌除外）；划分出了牌盒。</div></div>
+        <div class="log-item"><div class="log-date">2026.1.24</div><div class="log-text">优化了主界面布局，微调部分元素大小及位置，且可以随窗口尺寸拉伸；可以按下 F11 切换全屏/窗口模式；可以自由拉伸窗口；游戏内松开 v 时不管鼠标下是否有牌都会终止观看。</div></div>
+        <div class="log-item"><div class="log-date">2026.1.22</div><div class="log-text">修复了身份牌不正确放置的 bug；修复了玩家座位旋转角度不对的 bug；增加了标记，可以在扩展包中添加，可以如牌般拖动；增加了 z 键关闭看牌的功能；标记可以如牌般检索。</div></div>
+      </div>
+
+      <div class="log-year">2025</div>
+      <div class="log-list">
+        <div class="log-item"><div class="log-date">2025.12.5</div><div class="log-text">进入游戏加载动画完成；旁观者不再影响游戏开始；修复了图标缺失和主界面元素尺寸调整警告。</div></div>
+        <div class="log-item"><div class="log-date">2025.12.2</div><div class="log-text">增加了观众席功能；优化了相机缩放逻辑；修复了部分颜色；加入进入游戏加载动画，完成一阶段。</div></div>
+        <div class="log-item"><div class="log-date">2025.12.1</div><div class="log-text">增加了检索功能，按下 G 键会列出鼠标位置的所有牌，然后可以从其中把牌召唤到鼠标位置。</div></div>
+        <div class="log-item"><div class="log-date">2025.11.29</div><div class="log-text">修复了自动识别横板牌不完全的 bug；恢复弃牌堆的洗牌功能；合并了主菜单的“启动！”和“进入牌桌”按钮；牌桌菜单添加了“同步主机数据”，并将客机的“重新启动游戏”从禁用改为隐藏；牌桌菜单添加半透明黑色背景；修改了牌桌布局，把牌聚集在左下角并令玩家只分布在 270°，洗牌区也移动至左下角；修复了分辨率不对导致初始位置偏移的问题；把 mac 的文件目录从“三国杀模拟器”改为“南瓜牌桌”。</div></div>
+        <div class="log-item"><div class="log-date">2025.11.21</div><div class="log-text">增加了 B 键观看横版牌功能；增加了 T 键旋转正在观看的牌的功能；读取时能自动识别横版牌；将洗牌功能从弃牌堆移动到独立区域。</div></div>
+        <div class="log-item"><div class="log-date">2025.11.7</div><div class="log-text">修复了主界面大标题没有描边和阴影的问题。</div></div>
+        <div class="log-item"><div class="log-date">2025.11.5</div><div class="log-text">修改了主界面大标题，从文字改成图片文字 logo；增加了游戏图标。</div></div>
+        <div class="log-item"><div class="log-date">2025.10.31</div><div class="log-text">牌移动的方法从 _process 改成了 _physics_process；在牌移动中添加了正反面方向的参数；修复了不显示读取扩展进度的 bug；个性化改名为资源包；修复了主界面背景未铺满屏幕的问题。</div></div>
+        <div class="log-item"><div class="log-date">2025.10.25</div><div class="log-text">将扩展相关内容全部移进 ext_loader，暂时隐藏了房间设置；修复了重载扩展后预览为空的 bug；给自己的光标添加了自定义样式；重做了扩展格式；追加了道具牌。</div></div>
+        <div class="log-item"><div class="log-date">2025.10.8</div><div class="log-text">优化了部分代码；重做了牌堆结构，现在支持放置多个牌堆；游戏内暂时无法修改牌堆。</div></div>
+        <div class="log-item"><div class="log-date">2025.10.1</div><div class="log-text">Godot 引擎版本从 4.4 升到 4.5；修复了重载扩展会卡死的 bug；添加了连接音效；创建了抽屉，但暂时没有实际功能。</div></div>
+        <div class="log-item"><div class="log-date">2025.9.24</div><div class="log-text">修复了牌左右键粘手的 bug；优化了圆桌着色器的逻辑；修复了主机读取扩展不刷新显示的 bug。</div></div>
+        <div class="log-item"><div class="log-date">2025.9.23</div><div class="log-text">修复了观看牌可以被拖动的 bug；把桌布和弃牌堆修成了圆形；调整了牌桌布局；添加了 z 键松开所有牌。</div></div>
+        <div class="log-item"><div class="log-date">2025.9.22</div><div class="log-text">修复了主界面对不同尺寸屏幕缩放的问题；修复了 uuid 保存功能。</div></div>
+        <div class="log-item"><div class="log-date">2025.9.21</div><div class="log-text">新主界面启用，可以完成旧主界面的所有功能；修复了重载扩展导致的手牌丢失 bug；可以保存昵称和 IP 地址；uuid 保存功能目前有问题；项目正式改名为南瓜牌桌。</div></div>
+        <div class="log-item"><div class="log-date">2025.9.20</div><div class="log-text">新主界面外观基本完成，接下来开始做按钮脚本；牌桌场景调整，弃牌堆改为圆形，牌堆等布局重置，项目由擒鲲羽焉开始协作。</div></div>
+        <div class="log-item"><div class="log-date">2025.9.13</div><div class="log-text">在设置.json 中读取了 uuid，可以在大退后依然能够重连；观众席可以移动镜头；由于光标不动了，所以直接回滚到了 20250912 版。</div></div>
+        <div class="log-item"><div class="log-date">2025.9.12</div><div class="log-text">正在努力做新主界面……</div></div>
+        <div class="log-item"><div class="log-date">2025.9.10</div><div class="log-text">正在努力做新主界面……</div></div>
+        <div class="log-item"><div class="log-date">2025.9.9</div><div class="log-text">添加了读取扩展页，可视化读取进度。</div></div>
+        <div class="log-item"><div class="log-date">2025.9.8</div><div class="log-text">修复了不开命令列表就不能操作牌的 bug。这是因为 main 的节点类型被改成了 control，所以牌成为了 control 的子节点，因此要有 container 覆盖才能响应（大概？具体的不是很清楚，但是从现象上来说是这样）。</div></div>
+        <div class="log-item"><div class="log-date">2025.9.2</div><div class="log-text">修复了修改牌堆不同步的 bug；增加相机缩放功能；增加了设置.json，但是还没东西；准备做数据读取页面。</div></div>
+        <div class="log-item"><div class="log-date">2025.8.21</div><div class="log-text">增加断线重连。</div></div>
+        <div class="log-item"><div class="log-date">2025.8.19</div><div class="log-text">更新了光标；增加了主界面背景。</div></div>
+        <div class="log-item"><div class="log-date">2025.8.17</div><div class="log-text">放了个牌堆专属区域。</div></div>
+        <div class="log-item"><div class="log-date">2025.8.15</div><div class="log-text">军争牌堆准备好了；可以退出游戏或重新开始游戏；修复了之前没发现的 bug，现在可以正常操作牌堆了（area2d 最大响应数为 64，无法处理 160 张牌，因此重做了相关方法）；在玩家的光标上贴了名字；已经可以玩了！欢呼吧！</div></div>
+        <div class="log-item"><div class="log-date">2025.8.14</div><div class="log-text">重构了算法，删除扩展管理页，把数据读取直接放进房间设置中，并且无法再动态上传图片；牌可以旋转、翻面、观看，可以选择到底部；正在制作军争牌图片，目前已完成基本牌和装备牌；房间设置可以导入牌堆预设。</div></div>
+        <div class="log-item"><div class="log-date">2025.8.13</div><div class="log-text">发现牌堆并没有洗切，正在修；增加了军争牌堆的预设，但只先导入了图片，没有设置牌堆结构，也没有准备好用来导入的图片资源。</div></div>
+        <div class="log-item"><div class="log-date">2025.8.12</div><div class="log-text">修好了拖牌功能；在游戏开始时，准备好了身份牌、武将牌、游戏牌并同步；可以用 WASD 和 ↑↓←→ 移动相机。</div></div>
+        <div class="log-item"><div class="log-date">2025.8.9</div><div class="log-text">在游戏开始时准备了身份牌，但还没设置位置、洗牌和同步；正在修改拖动最上层牌的问题，但是还没修好。</div></div>
+        <div class="log-item"><div class="log-date">2025.8.7</div><div class="log-text">修复了视角角度不正确的问题；在游戏开始时准备了体力牌。</div></div>
+        <div class="log-item"><div class="log-date">2025.7.28</div><div class="log-text">可以进入牌桌，会自动随机分配座位，可以拖动卡牌。</div></div>
+        <div class="log-item"><div class="log-date">2025.7.7</div><div class="log-text">增加了牌桌场景，目前只是个空壳。</div></div>
+        <div class="log-item"><div class="log-date">2025.5.29</div><div class="log-text">在房间设置中可以看见游戏牌，可以编辑牌堆。</div></div>
+        <div class="log-item"><div class="log-date">2025.5.17</div><div class="log-text">远程连接测试失败，注意到内网穿透隧道必须使用 tcp 协议，但目前未找到稳定可靠的 tcp 隧道。</div></div>
+        <div class="log-item"><div class="log-date">2025.5.16</div><div class="log-text">修复 bug：当新的扩展加入或旧的扩展移除时，设置.json 不能正确工作；修复 bug：当项目导出后，无法读取文件；修复问题：当新玩家进入已有扩展的房间时，未同步扩展；远程连接测试成功，Mac 连 Windows 没有问题。</div></div>
+        <div class="log-item"><div class="log-date">2025.5.15</div><div class="log-text">修改设置读取逻辑；可以把扩展上传到房间，并显示武将牌设置；当未加入房间时，不能修改房间设置。</div></div>
+        <div class="log-item"><div class="log-date">2025.5.10</div><div class="log-text">房间设置页面增加通用、武将池、牌堆三个选项卡；可以把扩展上传至房间或从房间移除，但还不能在房间中显示。</div></div>
+        <div class="log-item"><div class="log-date">2025.4.30</div><div class="log-text">可以保存扩展开启设置；建立房间设置页面。</div></div>
+        <div class="log-item"><div class="log-date">2025.4.28</div><div class="log-text">尝试使用 json 保存设置。</div></div>
+        <div class="log-item"><div class="log-date">2025.4.27</div><div class="log-text">建立扩展管理界面。</div></div>
+        <div class="log-item"><div class="log-date">2025.4.25</div><div class="log-text">可以显示用户名和玩家列表；远程联机测试成功。</div></div>
+        <div class="log-item"><div class="log-date">2025.4.24</div><div class="log-text">可以创建服务端和客户端，可以连接。</div></div>
+      </div>
+    </div>
+
+    <div class="page-footer">
+      © 2025 - 2026 十二引工作室 · 南瓜牌桌
+      <span class="foot-sep">·</span>
+      <a href="https://qm.qq.com/q/247467529" target="_blank" rel="noopener">官方 QQ 群 247467529</a>
+    </div>
+  </section>
+
+  <!-- ========== 关于我们 ========== -->
+  <section class="page" id="page-about">
+    <div class="content" style="padding-top:64px;">
+      <div class="sec-tag">关于我们</div>
+      <h2 class="sec-title" style="margin-bottom:40px;">十二引工作室</h2>
+
+      <div class="about-block">
+        <h3>工作室简介</h3>
+        <p>（工作室简介待补充）</p>
+      </div>
+
+      <div class="about-block">
+        <h3>制作成员</h3>
+        <div class="member-list">
+          <div class="member">
+            <span class="member-role">美术设计</span>
+            <span class="member-name">曦梦良也</span>
+          </div>
+          <div class="member">
+            <span class="member-role">程序设计</span>
+            <span class="member-name">神南瓜心</span>
+          </div>
+          <div class="member">
+            <span class="member-role">程序设计</span>
+            <span class="member-name">擒鲲羽焉</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="about-block">
+        <h3>联系方式</h3>
+        <div class="about-links">
+          <a class="about-link" href="https://qm.qq.com/q/247467529" target="_blank" rel="noopener">
+            <svg viewBox="0 0 24 24"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/></svg>
+            <span class="al-label">官方 QQ 群</span>
+            <span class="al-value">247467529</span>
+          </a>
+          <a class="about-link" href="https://github.com/g-pumxin/pumpkin-card-table" target="_blank" rel="noopener">
+            <svg viewBox="0 0 24 24"><path d="M9 19c-5 1.5-5-2.5-7-3m14 6v-3.87a3.37 3.37 0 0 0-.94-2.61c3.14-.35 6.44-1.54 6.44-7A5.44 5.44 0 0 0 20 4.77 5.07 5.07 0 0 0 19.91 1S18.73.65 16 2.48a13.38 13.38 0 0 0-7 0C6.27.65 5.09 1 5.09 1A5.07 5.07 0 0 0 5 4.77a5.44 5.44 0 0 0-1.5 3.78c0 5.42 3.3 6.61 6.44 7A3.37 3.37 0 0 0 9 18.13V22"/></svg>
+            <span class="al-label">GitHub 仓库</span>
+            <span class="al-value">g-pumxin/pumpkin-card-table</span>
+          </a>
+        </div>
+      </div>
+
+      <div class="about-block">
+        <h3>特别致谢</h3>
+        <p>（致谢名单待补充）</p>
+      </div>
+
+      <div class="about-block">
+        <h3>版权声明</h3>
+        <p>© 2025 - 2026 十二引工作室 · 南瓜牌桌</p>
+        <p>本项目为免费非营利工具，供三国杀 DIY 爱好者交流使用。三国杀及相关商标、素材版权归其各自权利人所有。</p>
+      </div>
+    </div>
+
+    <div class="page-footer">
+      © 2025 - 2026 十二引工作室 · 南瓜牌桌
+      <span class="foot-sep">·</span>
+      <a href="https://qm.qq.com/q/247467529" target="_blank" rel="noopener">官方 QQ 群 247467529</a>
+    </div>
+  </section>
+
+</main>
+
+<script>
+  const sidebar = document.getElementById('sidebar');
+  const overlay = document.getElementById('overlay');
+  const hamburger = document.getElementById('hamburger');
+
+  function openSidebar() {
+    sidebar.classList.add('open');
+    overlay.classList.add('show');
+  }
+  function closeSidebar() {
+    sidebar.classList.remove('open');
+    overlay.classList.remove('show');
+  }
+
+  hamburger.addEventListener('click', () => {
+    if (sidebar.classList.contains('open')) closeSidebar();
+    else openSidebar();
+  });
+  overlay.addEventListener('click', closeSidebar);
+
+  const PAGES = ['home', 'tutorial', 'changelog', 'about'];
+
+  function switchPage(pageId) {
+    if (!PAGES.includes(pageId)) pageId = 'home';
+
+    document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+    document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+
+    const page = document.getElementById('page-' + pageId);
+    const nav = document.querySelector('.nav-item[data-page="' + pageId + '"]');
+    if (page) page.classList.add('active');
+    if (nav) nav.classList.add('active');
+
+    window.scrollTo({ top: 0, behavior: 'auto' });
+    closeSidebar();
+  }
+
+  function handleHash() {
+    const hash = window.location.hash.replace('#', '') || 'home';
+    switchPage(hash);
+  }
+
+  window.addEventListener('hashchange', handleHash);
+  window.addEventListener('DOMContentLoaded', handleHash);
+
+  // 如果首次加载没有任何 hash，默认切到 home
+  if (!window.location.hash) {
+    window.location.hash = 'home';
+  }
+</script>
+
 </body>
 </html>
