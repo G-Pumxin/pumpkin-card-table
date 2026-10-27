@@ -698,52 +698,6 @@
     background: rgba(212, 160, 41, 0.02);
   }
 
-  /* ============ 更新日志 ============ */
-  .log-year {
-    display: flex;
-    align-items: center;
-    gap: 16px;
-    margin: 44px 0 22px;
-    font-size: 22px;
-    font-weight: 800;
-    color: var(--gold);
-    letter-spacing: 1px;
-  }
-  .log-year::after {
-    content: "";
-    flex: 1;
-    height: 1px;
-    background: linear-gradient(90deg, var(--border-hover), transparent);
-  }
-  .log-list { display: grid; gap: 0; }
-  .log-item {
-    display: flex;
-    gap: 22px;
-    padding: 16px 4px;
-    border-bottom: 1px solid var(--border);
-    transition: background .2s;
-  }
-  .log-item:last-child { border-bottom: none; }
-  .log-item:hover {
-    background: rgba(212, 160, 41, 0.03);
-    border-radius: 8px;
-  }
-  .log-date {
-    font-family: ui-monospace, "SF Mono", Menlo, monospace;
-    font-size: 12.5px;
-    font-weight: 600;
-    color: var(--gold);
-    white-space: nowrap;
-    padding-top: 3px;
-    min-width: 82px;
-    flex-shrink: 0;
-  }
-  .log-text {
-    font-size: 14px;
-    color: var(--text-dim);
-    line-height: 1.85;
-  }
-
   /* ============ 关于我们 ============ */
   .about-block {
     margin-bottom: 36px;
@@ -1015,7 +969,6 @@
     <div class="sidebar-logo-fallback">🎃</div>
     <div>
       <div class="sidebar-title">南瓜牌桌</div>
-      <div class="sidebar-version">v2026.10.7</div>
     </div>
   </div>
 
@@ -1030,10 +983,6 @@
       <span>教程</span>
     </a>
 	-->
-    <a href="#changelog" class="nav-item" data-page="changelog">
-      <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
-      <span>更新日志</span>
-    </a>
     <a href="#about" class="nav-item" data-page="about">
       <svg viewBox="0 0 24 24"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
       <span>关于我们</span>
@@ -1059,7 +1008,7 @@
       <div class="content hero-inner">
         <div class="hero-badge">
           <span class="dot"></span>
-          持续更新中 · 最新版本 2026.10.7
+          持续更新中
         </div>
         <h1>不会写代码<br>也能线上玩<span class="grad-text">自己设计的武将</span></h1>
         <p class="hero-sub">南瓜牌桌 —— 免费的三国杀 DIY 远程牌桌模拟器</p>
@@ -1340,100 +1289,6 @@
   </section>
   -->
 
-  <!-- ========== 更新日志 ========== -->
-  <section class="page" id="page-changelog">
-    <div class="content" style="padding-top:64px;">
-      <div class="sec-tag">更新日志</div>
-      <h2 class="sec-title" style="margin-bottom:8px;">持续迭代中</h2>
-      <p class="sec-desc">从最初的原型到今天，南瓜牌桌一直在更新。以下为完整记录，按时间倒序。</p>
-
-      <div class="log-year">2026</div>
-      <div class="log-list">
-        <div class="log-item"><div class="log-date">2026.10.7</div><div class="log-text">修复了同步主机数据失败的问题；旋转视角不再同时旋转手牌区；鼠标中键会一并重置视角旋转；主界面扩展不正确的玩家名字会标红；牌堆类型增加了“无框标记”。</div></div>
-        <div class="log-item"><div class="log-date">2026.9.17</div><div class="log-text">修复了默认资源包中体力牌方向错误的 bug。</div></div>
-        <div class="log-item"><div class="log-date">2026.9.13</div><div class="log-text">增加了座位圆盘功能：按 Tab 唤出，左键单击可以令对应玩家屏幕闪烁，右键单击取消闪烁；可以旋转相机；暂时删除了玩家列表功能；调整了扩展读取页面的字体；优化了默认体力牌的图片；修复了卡牌大小调整导致错位的 bug；删除了一些调试信息。</div></div>
-        <div class="log-item"><div class="log-date">2026.8.31</div><div class="log-text">修复了卡牌大小不正常生效的 bug。</div></div>
-        <div class="log-item"><div class="log-date">2026.8.21</div><div class="log-text">修复了默认体力牌过小的 bug；删除了未使用的字体文件。</div></div>
-        <div class="log-item"><div class="log-date">2026.8.20</div><div class="log-text">修改了主界面的字体，并略微调整了部分文字的位置以匹配新字体；修改体力牌的默认图片，并将体力牌改为 5 张 1/2、25 张 3/4、5 张 5/4；自定义卡牌大小增加了上下界 [0.4, 25]；主界面增加了版权信息和版本号验证；游戏暂停页操作说明增加了 F11 切换窗口/全屏。</div></div>
-        <div class="log-item"><div class="log-date">2026.8.19</div><div class="log-text">优化了扩展读取，现在不同牌堆中可以有同名牌；增加了自定义牌背；增加了自定义卡牌大小；修复了重启时手牌区会透视牌堆的 bug；修复了牌旋转回原位时手牌区依然透视的 bug。</div></div>
-        <div class="log-item"><div class="log-date">2026.8.2</div><div class="log-text">修复了重开游戏后手牌区不能带牌一起移动的 bug；增加了 Tab 显示玩家列表的功能；删除了 z 键（释放拿着的牌）；给按键说明增加了滑轮；把 .pck 文件合并进 .exe 里了。</div></div>
-        <div class="log-item"><div class="log-date">2026.7.26</div><div class="log-text">修复了 webp 读取不正常导致无法进入游戏的 bug；修复了手牌区内有牌时重启游戏会导致崩溃的 bug；修复了投掷物渲染图层错误的 bug。</div></div>
-        <div class="log-item"><div class="log-date">2026.7.18</div><div class="log-text">将默认资源包内置了；修复了读取扩展计数不正确的 bug；扩展支持 .webp 格式的图片了；可以在主界面预览牌了，长按左键预览，单击右键旋转。</div></div>
-        <div class="log-item"><div class="log-date">2026.7.5</div><div class="log-text">修复了重开游戏时投掷物不清空的 bug。</div></div>
-        <div class="log-item"><div class="log-date">2026.6.23</div><div class="log-text">修复了重开游戏时如果手上拿着牌就会崩溃的 bug；修复了重开游戏时标记不清空的 bug；修复了检索牌时翻页和镜头缩放同时生效的 bug；修复了确定检索牌时不自动拿起牌、关闭检索页面的 bug；修复了相机移动速度异常的 bug；修复了同步主机数据不能同步手牌区方向和标记位置的 bug；增加了送花和砸蛋的按键说明。</div></div>
-        <div class="log-item"><div class="log-date">2026.6.22</div><div class="log-text">增加了送花和砸蛋功能（1 送花 2 砸蛋）。</div></div>
-        <div class="log-item"><div class="log-date">2026.5.31</div><div class="log-text">将桌布放大至 1.5 倍；将牌盒移动到桌布外，所有玩家调回按 360° 分配座位（1 号位角度为 16°），摄像机初始位置改为牌盒上；修复了手牌区内的卡牌旋转后仍能透视的 bug；增加了移动手牌区时同步移动手牌的功能。</div></div>
-        <div class="log-item"><div class="log-date">2026.4.28</div><div class="log-text">优化了网络逻辑和卡牌移动逻辑。</div></div>
-        <div class="log-item"><div class="log-date">2026.4.11</div><div class="log-text">将牌盒向左移动了一点，远离弃牌堆，给桌子留出更多空间；放大了桌布；修复了摊牌和叠牌不受手牌区透视的 bug。</div></div>
-        <div class="log-item"><div class="log-date">2026.3.24</div><div class="log-text">增加了选中的牌的计数板；将设置保存在文件中。</div></div>
-        <div class="log-item"><div class="log-date">2026.3.23</div><div class="log-text">增加了设置页，将操作说明和设置放在标签页容器中；增加了 Ctrl 键，配合左右键加减选；Ctrl 键可以在拉框时使用了。</div></div>
-        <div class="log-item"><div class="log-date">2026.3.22</div><div class="log-text">增加了拉框功能；将镜头缩放的按键改为滑轮，并修改了默认镜头缩放速度；重置镜头缩放的同时会回到原位；在鼠标不在牌上时快捷键仍能生效；增加了 Q 键堆牌、E 键摊牌功能；优化了左键拖拽逻辑；操作说明会随窗口大小变化而变化。</div></div>
-        <div class="log-item"><div class="log-date">2026.3.21</div><div class="log-text">修复了字体 bug；添加了操作说明；被选中的牌会用蓝色覆盖；可以一次性操作多张牌（目前只能用右键来多选牌）。</div></div>
-        <div class="log-item"><div class="log-date">2026.2.16</div><div class="log-text">修复了未分堆牌堆不进游戏的 bug；修复了桌布乱飞的 bug。</div></div>
-        <div class="log-item"><div class="log-date">2026.2.14</div><div class="log-text">扩展改为 zip 压缩包格式，并定义后缀名为 .pct；增加了打包扩展按钮，会把“待打包扩展”文件夹中的扩展打包到“扩展”文件夹里。</div></div>
-        <div class="log-item"><div class="log-date">2026.2.13</div><div class="log-text">修复了读取扩展时的部分问题；增加了把扩展包文件夹压缩为压缩包的功能；正在重写读取扩展……</div></div>
-        <div class="log-item"><div class="log-date">2026.2.1</div><div class="log-text">标记和桌布旋转到玩家方向。</div></div>
-        <div class="log-item"><div class="log-date">2026.1.31</div><div class="log-text">游戏内松开鼠标时不管鼠标下是否有牌都会终止拖动牌；手牌区可以自由拖拽和拉伸。</div></div>
-        <div class="log-item"><div class="log-date">2026.1.25</div><div class="log-text">增加了手牌区，与手牌区有交集的牌会显示半透明正面（身份牌除外）；划分出了牌盒。</div></div>
-        <div class="log-item"><div class="log-date">2026.1.24</div><div class="log-text">优化了主界面布局，微调部分元素大小及位置，且可以随窗口尺寸拉伸；可以按下 F11 切换全屏/窗口模式；可以自由拉伸窗口；游戏内松开 v 时不管鼠标下是否有牌都会终止观看。</div></div>
-        <div class="log-item"><div class="log-date">2026.1.22</div><div class="log-text">修复了身份牌不正确放置的 bug；修复了玩家座位旋转角度不对的 bug；增加了标记，可以在扩展包中添加，可以如牌般拖动；增加了 z 键关闭看牌的功能；标记可以如牌般检索。</div></div>
-      </div>
-
-      <div class="log-year">2025</div>
-      <div class="log-list">
-        <div class="log-item"><div class="log-date">2025.12.5</div><div class="log-text">进入游戏加载动画完成；旁观者不再影响游戏开始；修复了图标缺失和主界面元素尺寸调整警告。</div></div>
-        <div class="log-item"><div class="log-date">2025.12.2</div><div class="log-text">增加了观众席功能；优化了相机缩放逻辑；修复了部分颜色；加入进入游戏加载动画，完成一阶段。</div></div>
-        <div class="log-item"><div class="log-date">2025.12.1</div><div class="log-text">增加了检索功能，按下 G 键会列出鼠标位置的所有牌，然后可以从其中把牌召唤到鼠标位置。</div></div>
-        <div class="log-item"><div class="log-date">2025.11.29</div><div class="log-text">修复了自动识别横板牌不完全的 bug；恢复弃牌堆的洗牌功能；合并了主菜单的“启动！”和“进入牌桌”按钮；牌桌菜单添加了“同步主机数据”，并将客机的“重新启动游戏”从禁用改为隐藏；牌桌菜单添加半透明黑色背景；修改了牌桌布局，把牌聚集在左下角并令玩家只分布在 270°，洗牌区也移动至左下角；修复了分辨率不对导致初始位置偏移的问题；把 mac 的文件目录从“三国杀模拟器”改为“南瓜牌桌”。</div></div>
-        <div class="log-item"><div class="log-date">2025.11.21</div><div class="log-text">增加了 B 键观看横版牌功能；增加了 T 键旋转正在观看的牌的功能；读取时能自动识别横版牌；将洗牌功能从弃牌堆移动到独立区域。</div></div>
-        <div class="log-item"><div class="log-date">2025.11.7</div><div class="log-text">修复了主界面大标题没有描边和阴影的问题。</div></div>
-        <div class="log-item"><div class="log-date">2025.11.5</div><div class="log-text">修改了主界面大标题，从文字改成图片文字 logo；增加了游戏图标。</div></div>
-        <div class="log-item"><div class="log-date">2025.10.31</div><div class="log-text">牌移动的方法从 _process 改成了 _physics_process；在牌移动中添加了正反面方向的参数；修复了不显示读取扩展进度的 bug；个性化改名为资源包；修复了主界面背景未铺满屏幕的问题。</div></div>
-        <div class="log-item"><div class="log-date">2025.10.25</div><div class="log-text">将扩展相关内容全部移进 ext_loader，暂时隐藏了房间设置；修复了重载扩展后预览为空的 bug；给自己的光标添加了自定义样式；重做了扩展格式；追加了道具牌。</div></div>
-        <div class="log-item"><div class="log-date">2025.10.8</div><div class="log-text">优化了部分代码；重做了牌堆结构，现在支持放置多个牌堆；游戏内暂时无法修改牌堆。</div></div>
-        <div class="log-item"><div class="log-date">2025.10.1</div><div class="log-text">Godot 引擎版本从 4.4 升到 4.5；修复了重载扩展会卡死的 bug；添加了连接音效；创建了抽屉，但暂时没有实际功能。</div></div>
-        <div class="log-item"><div class="log-date">2025.9.24</div><div class="log-text">修复了牌左右键粘手的 bug；优化了圆桌着色器的逻辑；修复了主机读取扩展不刷新显示的 bug。</div></div>
-        <div class="log-item"><div class="log-date">2025.9.23</div><div class="log-text">修复了观看牌可以被拖动的 bug；把桌布和弃牌堆修成了圆形；调整了牌桌布局；添加了 z 键松开所有牌。</div></div>
-        <div class="log-item"><div class="log-date">2025.9.22</div><div class="log-text">修复了主界面对不同尺寸屏幕缩放的问题；修复了 uuid 保存功能。</div></div>
-        <div class="log-item"><div class="log-date">2025.9.21</div><div class="log-text">新主界面启用，可以完成旧主界面的所有功能；修复了重载扩展导致的手牌丢失 bug；可以保存昵称和 IP 地址；uuid 保存功能目前有问题；项目正式改名为南瓜牌桌。</div></div>
-        <div class="log-item"><div class="log-date">2025.9.20</div><div class="log-text">新主界面外观基本完成，接下来开始做按钮脚本；牌桌场景调整，弃牌堆改为圆形，牌堆等布局重置，项目由擒鲲羽焉开始协作。</div></div>
-        <div class="log-item"><div class="log-date">2025.9.13</div><div class="log-text">在设置.json 中读取了 uuid，可以在大退后依然能够重连；观众席可以移动镜头；由于光标不动了，所以直接回滚到了 20250912 版。</div></div>
-        <div class="log-item"><div class="log-date">2025.9.12</div><div class="log-text">正在努力做新主界面……</div></div>
-        <div class="log-item"><div class="log-date">2025.9.10</div><div class="log-text">正在努力做新主界面……</div></div>
-        <div class="log-item"><div class="log-date">2025.9.9</div><div class="log-text">添加了读取扩展页，可视化读取进度。</div></div>
-        <div class="log-item"><div class="log-date">2025.9.8</div><div class="log-text">修复了不开命令列表就不能操作牌的 bug。这是因为 main 的节点类型被改成了 control，所以牌成为了 control 的子节点，因此要有 container 覆盖才能响应（大概？具体的不是很清楚，但是从现象上来说是这样）。</div></div>
-        <div class="log-item"><div class="log-date">2025.9.2</div><div class="log-text">修复了修改牌堆不同步的 bug；增加相机缩放功能；增加了设置.json，但是还没东西；准备做数据读取页面。</div></div>
-        <div class="log-item"><div class="log-date">2025.8.21</div><div class="log-text">增加断线重连。</div></div>
-        <div class="log-item"><div class="log-date">2025.8.19</div><div class="log-text">更新了光标；增加了主界面背景。</div></div>
-        <div class="log-item"><div class="log-date">2025.8.17</div><div class="log-text">放了个牌堆专属区域。</div></div>
-        <div class="log-item"><div class="log-date">2025.8.15</div><div class="log-text">军争牌堆准备好了；可以退出游戏或重新开始游戏；修复了之前没发现的 bug，现在可以正常操作牌堆了（area2d 最大响应数为 64，无法处理 160 张牌，因此重做了相关方法）；在玩家的光标上贴了名字；已经可以玩了！欢呼吧！</div></div>
-        <div class="log-item"><div class="log-date">2025.8.14</div><div class="log-text">重构了算法，删除扩展管理页，把数据读取直接放进房间设置中，并且无法再动态上传图片；牌可以旋转、翻面、观看，可以选择到底部；正在制作军争牌图片，目前已完成基本牌和装备牌；房间设置可以导入牌堆预设。</div></div>
-        <div class="log-item"><div class="log-date">2025.8.13</div><div class="log-text">发现牌堆并没有洗切，正在修；增加了军争牌堆的预设，但只先导入了图片，没有设置牌堆结构，也没有准备好用来导入的图片资源。</div></div>
-        <div class="log-item"><div class="log-date">2025.8.12</div><div class="log-text">修好了拖牌功能；在游戏开始时，准备好了身份牌、武将牌、游戏牌并同步；可以用 WASD 和 ↑↓←→ 移动相机。</div></div>
-        <div class="log-item"><div class="log-date">2025.8.9</div><div class="log-text">在游戏开始时准备了身份牌，但还没设置位置、洗牌和同步；正在修改拖动最上层牌的问题，但是还没修好。</div></div>
-        <div class="log-item"><div class="log-date">2025.8.7</div><div class="log-text">修复了视角角度不正确的问题；在游戏开始时准备了体力牌。</div></div>
-        <div class="log-item"><div class="log-date">2025.7.28</div><div class="log-text">可以进入牌桌，会自动随机分配座位，可以拖动卡牌。</div></div>
-        <div class="log-item"><div class="log-date">2025.7.7</div><div class="log-text">增加了牌桌场景，目前只是个空壳。</div></div>
-        <div class="log-item"><div class="log-date">2025.5.29</div><div class="log-text">在房间设置中可以看见游戏牌，可以编辑牌堆。</div></div>
-        <div class="log-item"><div class="log-date">2025.5.17</div><div class="log-text">远程连接测试失败，注意到内网穿透隧道必须使用 tcp 协议，但目前未找到稳定可靠的 tcp 隧道。</div></div>
-        <div class="log-item"><div class="log-date">2025.5.16</div><div class="log-text">修复 bug：当新的扩展加入或旧的扩展移除时，设置.json 不能正确工作；修复 bug：当项目导出后，无法读取文件；修复问题：当新玩家进入已有扩展的房间时，未同步扩展；远程连接测试成功，Mac 连 Windows 没有问题。</div></div>
-        <div class="log-item"><div class="log-date">2025.5.15</div><div class="log-text">修改设置读取逻辑；可以把扩展上传到房间，并显示武将牌设置；当未加入房间时，不能修改房间设置。</div></div>
-        <div class="log-item"><div class="log-date">2025.5.10</div><div class="log-text">房间设置页面增加通用、武将池、牌堆三个选项卡；可以把扩展上传至房间或从房间移除，但还不能在房间中显示。</div></div>
-        <div class="log-item"><div class="log-date">2025.4.30</div><div class="log-text">可以保存扩展开启设置；建立房间设置页面。</div></div>
-        <div class="log-item"><div class="log-date">2025.4.28</div><div class="log-text">尝试使用 json 保存设置。</div></div>
-        <div class="log-item"><div class="log-date">2025.4.27</div><div class="log-text">建立扩展管理界面。</div></div>
-        <div class="log-item"><div class="log-date">2025.4.25</div><div class="log-text">可以显示用户名和玩家列表；远程联机测试成功。</div></div>
-        <div class="log-item"><div class="log-date">2025.4.24</div><div class="log-text">可以创建服务端和客户端，可以连接。</div></div>
-      </div>
-    </div>
-
-    <div class="page-footer">
-      © 2025 - 2026 十二引工作室 · 南瓜牌桌
-      <span class="foot-sep">·</span>
-      <a class="js-open-qq">官方 QQ 群 247467529</a>
-    </div>
-  </section>
-
   <!-- ========== 关于我们 ========== -->
   <section class="page" id="page-about">
     <div class="content" style="padding-top:64px;">
@@ -1540,7 +1395,7 @@
   overlay.addEventListener('click', closeSidebar);
 
   /* ============ 标签页切换 ============ */
-  const PAGES = ['home', 'changelog', 'about'];
+  const PAGES = ['home', 'about'];
 
   function switchPage(pageId) {
     if (!PAGES.includes(pageId)) pageId = 'home';
