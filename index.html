@@ -253,6 +253,10 @@
     transform: translateY(-2px);
     box-shadow: 0 10px 30px rgba(255, 107, 0, .45);
   }
+  .btn-primary:active {
+    transform: translateY(0) scale(0.97);
+    box-shadow: 0 6px 18px rgba(255, 107, 0, .3);
+  }
   .btn-ghost {
     background: rgba(212, 160, 41, 0.06);
     color: var(--text);
@@ -261,6 +265,35 @@
   .btn-ghost:hover {
     background: rgba(212, 160, 41, 0.12);
     transform: translateY(-2px);
+  }
+
+  /* 首页主 CTA：加入官方 QQ 群 */
+  .hero-cta {
+    padding: 16px 32px;
+    font-size: 16px;
+    min-width: 220px;
+  }
+  .hero-cta-text {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 4px;
+    line-height: 1.3;
+  }
+  .hero-cta-title {
+    font-size: 16px;
+    font-weight: 700;
+    letter-spacing: 0.5px;
+  }
+  .hero-cta-sub {
+    font-size: 11.5px;
+    font-weight: 600;
+    opacity: 0.9;
+    letter-spacing: 1px;
+    color: #fff;
+  }
+  .hero-cta svg {
+    margin-right: 10px;
   }
 
   .sec-tag {
@@ -621,6 +654,19 @@
     color: var(--text-dim);
     line-height: 1.5;
   }
+  .key-group-title {
+    grid-column: 1 / -1;
+    font-size: 11.5px;
+    font-weight: 700;
+    letter-spacing: 1.5px;
+    color: var(--gold);
+    text-transform: uppercase;
+    padding: 4px 16px;
+    background: rgba(212, 160, 41, 0.05);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    margin-bottom: 6px;
+  }
 
   /* ============ FAQ ============ */
   .faq-list {
@@ -660,42 +706,159 @@
   details[open] summary::after { transform: rotate(45deg); }
   summary:hover { color: var(--gold); }
   .faq-body {
-    padding: 0 22px 20px;
+    padding: 0 22px 0;
     font-size: 14px;
     color: var(--text-dim);
     line-height: 1.9;
+    max-height: 0;
+    opacity: 0;
+    overflow: hidden;
+    transition: max-height 0.3s ease, opacity 0.3s ease, padding-bottom 0.3s ease;
+  }
+  details[open] .faq-body {
+    padding: 0 22px 20px;
+    max-height: 1000px;
+    opacity: 1;
   }
 
   /* ============ 教程页 ============ */
-  .tut-block {
+  /* 教程页：以原 PDF 为内容源，提供清晰、可扫描的阅读入口。 */
+  .tutorial-page { padding-top: 64px; }
+  .tutorial-intro {
+    display: flex;
+    align-items: flex-end;
+    justify-content: space-between;
+    gap: 24px;
+    margin-bottom: 30px;
+  }
+  .tutorial-intro .sec-desc { margin-bottom: 0; max-width: 650px; }
+  .tutorial-grid {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 18px;
+    margin-bottom: 18px;
+  }
+  .tutorial-card {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    min-height: 100%;
+    padding: 28px;
+    overflow: hidden;
     background: var(--card);
     border: 1px solid var(--border);
     border-radius: var(--radius);
-    padding: 32px;
-    margin-bottom: 20px;
+    transition: transform .25s, border-color .25s, background .25s;
   }
-  .tut-block h3 {
-    font-size: 19px;
-    font-weight: 700;
-    margin-bottom: 6px;
-    color: var(--gold);
+  .tutorial-card::after {
+    content: "";
+    position: absolute;
+    width: 180px;
+    height: 180px;
+    right: -105px;
+    top: -105px;
+    border-radius: 50%;
+    background: rgba(212, 160, 41, .08);
+    filter: blur(30px);
+    pointer-events: none;
   }
-  .tut-block .tut-sub {
-    font-size: 13px;
-    color: var(--text-faint);
+  .tutorial-card:hover {
+    transform: translateY(-4px);
+    border-color: var(--border-hover);
+    background: var(--card-hover);
+    box-shadow: 0 0 24px rgba(212, 160, 41, 0.12);
+  }
+  .tutorial-card-head {
+    display: flex;
+    align-items: center;
+    gap: 14px;
     margin-bottom: 22px;
-    padding-bottom: 18px;
-    border-bottom: 1px solid var(--border);
   }
-  .tut-placeholder {
-    color: var(--text-faint);
+  .tutorial-card .feat-icon { margin-bottom: 0; flex-shrink: 0; }
+  .tutorial-kicker {
+    margin-bottom: 3px;
+    color: var(--gold);
+    font-family: ui-monospace, "SF Mono", Menlo, monospace;
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 1.4px;
+  }
+  .tutorial-card h3 { margin: 0; font-size: 19px; font-weight: 700; }
+  .tutorial-card > p {
+    margin-bottom: 22px;
+    color: var(--text-dim);
     font-size: 14px;
-    font-style: italic;
-    padding: 24px 0;
-    text-align: center;
-    border: 1px dashed var(--border-hover);
-    border-radius: 10px;
-    background: rgba(212, 160, 41, 0.02);
+    line-height: 1.9;
+  }
+  .tutorial-meta {
+    display: grid;
+    grid-template-columns: auto 1fr;
+    gap: 8px 14px;
+    margin-top: auto;
+    padding: 18px 0 22px;
+    border-top: 1px solid var(--border);
+    font-size: 13px;
+  }
+  .tutorial-meta dt { color: var(--text-faint); }
+  .tutorial-meta dd { color: var(--text-dim); text-align: right; }
+  .tutorial-card .btn {
+    align-self: flex-start;
+    max-width: 100%;
+    padding: 11px 20px;
+    font-size: 13.5px;
+  }
+  .tutorial-note {
+    display: flex;
+    align-items: flex-start;
+    gap: 12px;
+    padding: 16px 18px;
+    color: var(--text-faint);
+    background: rgba(212, 160, 41, .035);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    font-size: 12.5px;
+    line-height: 1.8;
+  }
+  .tutorial-note svg {
+    width: 17px;
+    height: 17px;
+    margin-top: 3px;
+    stroke: var(--gold);
+    stroke-width: 2;
+    fill: none;
+    flex-shrink: 0;
+  }
+  .tutorial-next {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 24px;
+    margin-top: 22px;
+    padding: 24px 26px;
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+  }
+  .tutorial-next h3 { font-size: 16px; margin-bottom: 4px; }
+  .tutorial-next p { color: var(--text-dim); font-size: 13.5px; }
+  .tutorial-next .btn { flex-shrink: 0; padding: 11px 22px; }
+  .quick-start-link {
+    display: inline-flex;
+    align-items: center;
+    gap: 7px;
+    margin-top: 22px;
+    color: var(--gold);
+    font-size: 13.5px;
+    font-weight: 600;
+    transition: color .2s, gap .2s;
+  }
+  .quick-start-link:hover { gap: 10px; color: var(--orange); }
+  .quick-start-link svg {
+    width: 16px;
+    height: 16px;
+    stroke: currentColor;
+    stroke-width: 2;
+    fill: none;
   }
 
   /* ============ 关于我们 ============ */
@@ -932,6 +1095,11 @@
     .steps { grid-template-columns: repeat(2, 1fr); }
     .section { padding: 56px 0; }
     .shots-row { grid-template-columns: 1fr; }
+    .tutorial-page { padding-top: 48px; }
+    .tutorial-intro { align-items: flex-start; flex-direction: column; gap: 14px; }
+    .tutorial-grid { grid-template-columns: 1fr; }
+    .tutorial-next { align-items: flex-start; flex-direction: column; gap: 16px; }
+    .tutorial-next .btn { width: 100%; justify-content: center; }
   }
 
   @media (max-width: 620px) {
@@ -942,9 +1110,50 @@
     .btn { width: 100%; justify-content: center; }
     .log-item { flex-direction: column; gap: 6px; }
     .log-date { min-width: auto; }
-    .tut-block { padding: 22px 18px; }
     .about-link { flex-wrap: wrap; }
+    .tutorial-card { padding: 24px 20px; }
+    .tutorial-card-head { gap: 12px; align-items: flex-start; }
+    .tutorial-card h3 { font-size: 17px; }
+    .tutorial-meta { grid-template-columns: 1fr; gap: 4px; }
+    .tutorial-meta dd { text-align: left; }
+    .tutorial-note { font-size: 12px; padding: 14px 15px; }
     .modal { padding: 30px 22px 24px; }
+  }
+
+  /* ============ 美化动效 ============ */
+  /* 键盘焦点环框：无障碍友好，按钮与链接 Tab 切换时可见 */
+  .btn:focus-visible,
+  .nav-item:focus-visible,
+  a.js-open-qq:focus-visible {
+    outline: 2px solid var(--gold);
+    outline-offset: 3px;
+  }
+
+  /* 滚动揭示：首页下方区块进入视口时依次浮现 */
+  .reveal {
+    opacity: 0;
+    transform: translateY(14px);
+    transition: opacity 0.6s ease, transform 0.6s ease;
+  }
+  .reveal.show {
+    opacity: 1;
+    transform: none;
+  }
+
+  /* 减少动画：尊重系统偏好 */
+  @media (prefers-reduced-motion: reduce) {
+    .reveal {
+      opacity: 1;
+      transform: none;
+      animation: none;
+      transition: none;
+    }
+    .faq-body {
+      transition: none;
+    }
+    .modal-overlay.show {
+      opacity: 1;
+    }
   }
 </style>
 </head>
@@ -977,12 +1186,10 @@
       <svg viewBox="0 0 24 24"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
       <span>首页</span>
     </a>
-	<!--
     <a href="#tutorial" class="nav-item" data-page="tutorial">
       <svg viewBox="0 0 24 24"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/></svg>
       <span>教程</span>
     </a>
-	-->
     <a href="#about" class="nav-item" data-page="about">
       <svg viewBox="0 0 24 24"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
       <span>关于我们</span>
@@ -1015,15 +1222,12 @@
         <p class="hero-line">像面杀一样，手动操作每一张牌</p>
 
         <div class="hero-btns">
-		  <!--
-          <a class="btn btn-primary" href="https://github.com/g-pumxin/pumpkin-card-table/releases/latest" target="_blank" rel="noopener">
-            <svg viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
-            下载最新版
-          </a>
-		  -->
-          <a class="btn btn-primary js-open-qq" href="#" role="button">
+          <a class="btn btn-primary js-open-qq hero-cta" href="#" role="button">
             <svg viewBox="0 0 24 24"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/></svg>
-            加入 QQ 群
+            <div class="hero-cta-text">
+              <div class="hero-cta-title">加入官方 QQ群</div>
+              <div class="hero-cta-sub">下载 · 游玩 · 设计 · 交流</div>
+            </div>
           </a>
         </div>
 
@@ -1035,7 +1239,7 @@
     </div>
 
     <!-- 简介 -->
-    <div class="section">
+    <div class="section reveal">
       <div class="content">
         <div class="intro-grid">
           <div class="intro-text">
@@ -1081,7 +1285,7 @@
     </div>
 
     <!-- 核心功能 -->
-    <div class="section">
+    <div class="section reveal">
       <div class="content">
         <div class="sec-tag">核心功能</div>
         <h2 class="sec-title">你能用它做什么</h2>
@@ -1123,7 +1327,7 @@
     </div>
 
     <!-- 实机截图 -->
-    <div class="section">
+    <div class="section reveal">
       <div class="content">
         <div class="sec-tag">实机截图</div>
         <h2 class="sec-title">看看它长什么样</h2>
@@ -1149,7 +1353,7 @@
     </div>
 
     <!-- 快速上手 -->
-    <div class="section">
+    <div class="section reveal">
       <div class="content">
         <div class="sec-tag">快速上手</div>
         <h2 class="sec-title">四步开始一场对局</h2>
@@ -1177,21 +1381,28 @@
             <p>分配座位、发好身份牌与体力牌，像面杀一样手动操作每一张牌。</p>
           </div>
         </div>
+        <a class="quick-start-link" href="#tutorial" data-page="tutorial">
+          查看完整安装与扩展制作教程
+          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12h14"/><path d="m13 6 6 6-6 6"/></svg>
+        </a>
       </div>
     </div>
 
     <!-- 快捷键 -->
-    <div class="section">
+    <div class="section reveal">
       <div class="content">
         <div class="sec-tag">操作说明</div>
         <h2 class="sec-title">常用快捷键一览</h2>
         <p class="sec-desc">熟悉这些按键，能让你在对局中操作得更流畅。游戏内也提供完整的操作说明页。</p>
 
         <div class="keys">
+          <div class="key-group-title">镜头操作</div>
           <div class="key-row"><kbd>W A S D</kbd><span class="key-desc">移动镜头</span></div>
           <div class="key-row"><kbd>↑ ↓ ← →</kbd><span class="key-desc">移动镜头</span></div>
           <div class="key-row"><kbd>滚轮</kbd><span class="key-desc">镜头缩放</span></div>
           <div class="key-row"><kbd>中键</kbd><span class="key-desc">重置视角与缩放</span></div>
+
+          <div class="key-group-title">牌堆操作</div>
           <div class="key-row"><kbd>左键拖拽</kbd><span class="key-desc">移动卡牌</span></div>
           <div class="key-row"><kbd>右键</kbd><span class="key-desc">多选卡牌</span></div>
           <div class="key-row"><kbd>Ctrl + 左右键</kbd><span class="key-desc">加选 / 减选</span></div>
@@ -1199,18 +1410,22 @@
           <div class="key-row"><kbd>Q</kbd><span class="key-desc">堆牌</span></div>
           <div class="key-row"><kbd>E</kbd><span class="key-desc">摊牌</span></div>
           <div class="key-row"><kbd>G</kbd><span class="key-desc">检索鼠标位置的牌</span></div>
+
+          <div class="key-group-title">对局辅助</div>
           <div class="key-row"><kbd>B</kbd><span class="key-desc">观看横版牌</span></div>
           <div class="key-row"><kbd>T</kbd><span class="key-desc">旋转观看中的牌</span></div>
           <div class="key-row"><kbd>V</kbd><span class="key-desc">按住观看牌面</span></div>
           <div class="key-row"><kbd>Tab</kbd><span class="key-desc">唤出座位圆盘</span></div>
           <div class="key-row"><kbd>1 / 2</kbd><span class="key-desc">送花 / 砸蛋</span></div>
+
+          <div class="key-group-title">系统</div>
           <div class="key-row"><kbd>F11</kbd><span class="key-desc">切换全屏 / 窗口</span></div>
         </div>
       </div>
     </div>
 
     <!-- FAQ -->
-    <div class="section">
+    <div class="section reveal">
       <div class="content">
         <div class="sec-tag">常见问题</div>
         <h2 class="sec-title">你可能想问</h2>
@@ -1250,34 +1465,58 @@
     </div>
   </section>
 
-  <!-- ========== 教程 ========== -->
-  <!--
   <section class="page" id="page-tutorial">
-    <div class="content" style="padding-top:64px;">
-      <div class="sec-tag">教程</div>
-      <h2 class="sec-title" style="margin-bottom:8px;">安装与扩展制作</h2>
-      <p class="sec-desc">从下载安装到写出第一个扩展包，分两部分说明。</p>
-
-      <div class="tut-block">
-        <h3>一、安装教程</h3>
-        <div class="tut-sub">从下载到进入牌桌</div>
-        <div class="tut-placeholder">
-          安装教程内容待补充<br>
-          <span style="font-size:12.5px;">（将在此处按原文分节展示，可插入截图与折叠步骤）</span>
+    <div class="tutorial-page content">
+      <div class="tutorial-intro">
+        <div>
+          <div class="sec-tag">教程</div>
+          <h1 class="sec-title">从第一场牌局开始</h1>
         </div>
+        <p class="sec-desc">首次使用请先阅读安装与使用教程；准备制作武将、牌堆或标记时，再查看扩展制作教程。</p>
       </div>
 
-      <div class="tut-block">
-        <h3>二、扩展制作教程</h3>
-        <div class="tut-sub">从了解结构到打包 .pct</div>
-        <div class="tut-placeholder">
-          扩展制作教程内容待补充<br>
-          <span style="font-size:12.5px;">（将在此处按原文分节展示，可插入示例与图文说明）</span>
-        </div>
+      <div class="tutorial-grid">
+        <article class="tutorial-card">
+          <div class="tutorial-card-head">
+            <div class="feat-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3v12"/><path d="m7 8 5-5 5 5"/><path d="M5 21h14a2 2 0 0 0 2-2v-5"/><path d="M3 14v5a2 2 0 0 0 2 2"/></svg></div>
+            <div><div class="tutorial-kicker">GETTING STARTED</div><h3>安装与使用教程</h3></div>
+          </div>
+          <p>面向第一次使用南瓜牌桌的玩家，从安装启动、房间配置到基础操作，帮助你完成第一场远程对局。</p>
+          <dl class="tutorial-meta">
+            <dt>适合人群</dt><dd>新玩家 · 房主</dd>
+            <dt>阅读顺序</dt><dd>建议先阅读</dd>
+          </dl>
+          <a class="btn btn-primary" href="教程/安装使用教程.pdf" target="_blank" rel="noopener">
+            <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><path d="M14 2v6h6"/><path d="M8 13h8"/><path d="M8 17h6"/></svg>
+            阅读安装教程
+          </a>
+        </article>
+
+        <article class="tutorial-card">
+          <div class="tutorial-card-head">
+            <div class="feat-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="m12 3 8 4.5v9L12 21l-8-4.5v-9L12 3Z"/><path d="m4 7.5 8 4.5 8-4.5"/><path d="M12 12v9"/><path d="m8 5.3 8 4.5"/></svg></div>
+            <div><div class="tutorial-kicker">CREATE &amp; PACK</div><h3>扩展制作教程</h3></div>
+          </div>
+          <p>面向 DIY 内容作者，说明武将、牌堆与标记等扩展资源的制作思路、目录结构与 .pct 打包方式。</p>
+          <dl class="tutorial-meta">
+            <dt>适合人群</dt><dd>DIY 设计者</dd>
+            <dt>产出目标</dt><dd>可导入的 .pct</dd>
+          </dl>
+          <a class="btn btn-ghost" href="教程/扩展制作教程.pdf" target="_blank" rel="noopener">
+            <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><path d="M14 2v6h6"/><path d="M8 13h8"/><path d="M8 17h6"/></svg>
+            阅读扩展教程
+          </a>
+        </article>
       </div>
 
-      <div style="text-align:center;color:var(--text-faint);font-size:13px;padding:12px 0 20px;">
-        完整教程也会以 PDF 形式在官方 QQ 群内提供
+      <div class="tutorial-note">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="10"/><path d="M12 16v-4"/><path d="M12 8h.01"/></svg>
+        <span>两份教程均为高清 PDF，点击卡片按钮可在新标签页中查看或下载。移动端也可长按链接后选择“下载文件”。</span>
+      </div>
+
+      <div class="tutorial-next">
+        <div><h3>第一次创建牌桌？</h3><p>先通过四步快速了解下载、扩展包与联机的基本流程。</p></div>
+        <a class="btn btn-ghost" href="#home" data-page="home">查看快速上手 <span aria-hidden="true">→</span></a>
       </div>
     </div>
 
@@ -1287,7 +1526,6 @@
       <a class="js-open-qq">官方 QQ 群 247467529</a>
     </div>
   </section>
-  -->
 
   <!-- ========== 关于我们 ========== -->
   <section class="page" id="page-about">
@@ -1354,7 +1592,7 @@
 <div class="modal-overlay" id="qqModal">
   <div class="modal">
     <button class="modal-close" id="modalClose" aria-label="关闭">×</button>
-    <div class="modal-title">加入南瓜牌桌官方群</div>
+    <div class="modal-title">加入官方 QQ群</div>
     <div class="modal-sub">扫码或搜索群号，获取最新版本与扩展包</div>
     <div class="modal-qr">
       <img src="images/qq-group.webp" alt="QQ群二维码"
@@ -1395,10 +1633,17 @@
   overlay.addEventListener('click', closeSidebar);
 
   /* ============ 标签页切换 ============ */
-  const PAGES = ['home', 'about'];
+  const PAGES = ['home', 'tutorial', 'about'];
 
   function switchPage(pageId) {
     if (!PAGES.includes(pageId)) pageId = 'home';
+
+    const titles = {
+      home: '南瓜牌桌 · 免费的三国杀 DIY 远程牌桌模拟器',
+      tutorial: '教程 · 南瓜牌桌',
+      about: '关于我们 · 南瓜牌桌'
+    };
+    document.title = titles[pageId] || titles.home;
 
     document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
     document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
@@ -1411,6 +1656,17 @@
     window.scrollTo({ top: 0, behavior: 'auto' });
     closeSidebar();
   }
+
+  /* ============ 滚动揭示 ============ */
+  const observerOptions = { threshold: 0.12, rootMargin: '0px 0px -80px 0px' };
+  const revealObserver = new IntersectionObserver((entries) => {
+    entries.forEach(entry => {
+      if (entry.isIntersecting) {
+        entry.target.classList.add('show');
+      }
+    });
+  }, observerOptions);
+  document.querySelectorAll('.reveal').forEach(el => revealObserver.observe(el));
 
   function handleHash() {
     const hash = window.location.hash.replace('#', '') || 'home';
